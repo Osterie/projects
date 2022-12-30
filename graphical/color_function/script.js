@@ -4,7 +4,6 @@
 //Lemniscate
 // ((X)**2 + (Y)**2)**2 - ((X)**2 - (Y)**2)
 
-
 const get_hue_expression = document.getElementById("hue_expression");
 const get_saturation_expression = document.getElementById("saturation_expression");
 const get_lightness_expression = document.getElementById("lightness_expression");
@@ -125,8 +124,8 @@ function change_hue_loop() {
 
   tegnBrukBakgrunn("black");
 
-  for (let x = 0; x < size; x++) {
-    for (let y = 0; y < size; y++) {
+  for (let x = size_lower; x < size_upper; x++) {
+    for (let y = size_lower; y < size_upper; y++) {
       matrix_squares[x][y].hue_changed((x*pixel_size) + size_lower, (y*pixel_size) + size_lower)
     }
   }
@@ -137,8 +136,8 @@ function change_saturation_loop() {
   
   tegnBrukBakgrunn("black");
 
-  for (let x = 0; x < size; x++) {
-    for (let y = 0; y < size; y++) {
+  for (let x = size_lower; x < size_upper; x++) {
+    for (let y = size_lower; y < size_upper; y++) {
       matrix_squares[x][y].saturation_changed((x*pixel_size) + size_lower, (y*pixel_size) + size_lower)
     }
   }
@@ -147,10 +146,10 @@ function change_saturation_loop() {
 function change_lightness_loop() {
   size = (Math.abs(size_lower) + size_upper)/pixel_size;
   
-  tegnBrukBakgrunn("black");
+  // tegnBrukBakgrunn("black");
 
-  for (let x = 0; x < size; x++) {
-    for (let y = 0; y < size; y++) {
+  for (let x = size_lower; x < size_upper; x++) {
+    for (let y = size_lower; y < size_upper; y++) {
       matrix_squares[x][y].lightness_changed((x*pixel_size) + size_lower, (y*pixel_size) + size_lower)
     }
   }
@@ -159,7 +158,7 @@ function change_lightness_loop() {
 function create_squares() {
   size = (Math.abs(size_lower) + size_upper)/pixel_size;
   
-  tegnBrukBakgrunn("black");
+  // tegnBrukBakgrunn("black");
 
   for (let x = size_lower; x < size_upper; x++) {
     if (matrix_squares[x] == undefined) {
@@ -170,7 +169,7 @@ function create_squares() {
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
         ((y*pixel_size)),
-        ((x*pixel_size)) * ((y*pixel_size)),
+        hue,
         saturation,
         lightness,
         pixel_size
@@ -205,20 +204,17 @@ var max_size = 0;
 
 function draw_squares() {
   if (redraw_background) {
-    tegnBrukBakgrunn("black");
+    // tegnBrukBakgrunn("black");
   }
   
-  tegnBrukBakgrunn("black");
+  // tegnBrukBakgrunn("black");
   size = (Math.abs(size_lower) + size_upper)/pixel_size; //TODO: Redundant?
 
   if (!scaled) {
-    // tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
-    tegnBrukXY(-50, 50, -50, 50);
-    if (size == 40){
-      console.log(size)
-    }
+    tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
+
   }
-  tegnBrukBakgrunn("black");
+  // tegnBrukBakgrunn("black");
 
   for (let x = size_lower; x < size_upper; x++) {
     for (let y = size_lower; y < size_upper; y++) {
@@ -227,44 +223,29 @@ function draw_squares() {
   }
 }
 
-function change_color(x, y) {
+function change_hue(x, y) {
   
-  if (get_expression.value) {
-    //This is SUPER slow.
-    //for now i recommend just changing the returned expression to whatever you want
-    //ie. x*y*10 or something.
-    let returnme = get_color_expression.value.replace(/X/g, x).replace(/Y/g, y);
+    let returnme = get_hue_expression.value
+    .replace(/X/g, x)
+    .replace(/Y/g, y);
     return Function("return " + returnme)();
-  } else {
-    return 34;
-  }
+
 }
 
 function change_saturation(x, y) {
-  if (get_saturation_expression.value) {
-    //This is SUPER slow.
-    //for now i recommend just changing the returned expression to whatever you want
-    //ie. x*y*10 or something.
+
     let returnme = get_saturation_expression.value
       .replace(/X/g, x)
       .replace(/Y/g, y);
     return Function("return " + returnme)() % 100; //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden
-  } else {
-    return 54;
-  }
 }
-function change_hue(x, y) {
-  if (get_saturation_expression.value) {
-    let returnme = get_hue_expression.value.replace(/X/g, x).replace(/Y/g, y);
 
+function change_lighness(x, y) {
+    let returnme = get_lighness_expression.value
+    .replace(/X/g, x)
+    .replace(/Y/g, y);
     return Function("return " + returnme)() % 100; //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden 
-  } else {
-    return 50;
-  }
 }
-
-
-
 
 // const get_runspeed = document.getElementById("runspeed");
 // get_runspeed.addEventListener("change", change_runspeed);
@@ -433,13 +414,9 @@ absolute_heigth_square = canvas.height / size;
 
 canvas.addEventListener("mousemove", zoom_guider);
 
-canvas.addEventListener("mousedown", function (e) {
-  get_cursor_position(canvas, e);
-});
+canvas.addEventListener("mousedown", function (e) {get_cursor_position(canvas, e);});
 
-canvas.addEventListener("mouseup", function (e) {
-  get_cursor_position(canvas, e);
-});
+canvas.addEventListener("mouseup", function (e) {get_cursor_position(canvas, e);});
 
 window.onload = winInit;
 function winInit() {
@@ -449,7 +426,7 @@ function winInit() {
   //For refresh every second(no use for feature yet)
   // animId = setInterval(create_squares,1000/runspeed);
   tegnBrukBakgrunn("black");
-  tegnBrukSynsfelt(0, 1, 0, 1);
+  // tegnBrukSynsfelt(0, 0.5, 0, 0.5);
   // ctx.filter = 'hue-rotate(200deg)' INTERESTING!
 
   create_squares();
