@@ -4,6 +4,8 @@
 //Lemniscate
 // ((X)**2 + (Y)**2)**2 - ((X)**2 - (Y)**2)
 
+//This is just a test
+
 class Square {
   constructor(xpos, ypos, color, saturation, hue, pixel_size) {
     this.xpos = xpos;
