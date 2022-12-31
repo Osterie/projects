@@ -4,56 +4,26 @@
 //Lemniscate
 // ((X)**2 + (Y)**2)**2 - ((X)**2 - (Y)**2)
 
-const get_hue_expression = document.getElementById("hue_expression");
-const get_saturation_expression = document.getElementById("saturation_expression");
-const get_lightness_expression = document.getElementById("lightness_expression");
-
-get_hue_expression.addEventListener("change", change_hue_loop);
-get_saturation_expression.addEventListener("change", change_saturation_loop);
-get_lightness_expression.addEventListener("change", change_lightness_loop);
-
-const get_size_lower = document.getElementById("size_lower");
-const get_size_upper = document.getElementById("size_upper");
-get_size_upper.addEventListener("change", change_size_upper);
-get_size_lower.addEventListener("change", change_size_lower);
-
+//This is just a test
 
 class Square {
-  constructor(xpos, ypos, hue, saturation, lightness, pixel_size) {
+  constructor(xpos, ypos, color, saturation, hue, pixel_size) {
     this.xpos = xpos;
     this.ypos = ypos;
-    this.hue = hue;
+    this.color = color;
     this.saturation = saturation;
-    this.lightness = lightness;
+    this.hue = hue;
     this.pixel_size = pixel_size;
   }
-  
+
   tegn() {
     tegnFyltRektangel(
       this.xpos,
       this.ypos,
       pixel_size,
       pixel_size,
-      "hsl(" + this.hue + ", " + this.saturation + "%," + this.lightness + "%)"
-      );
-    }
-    
-    hue_changed(x, y) {
-      var hue_expression = get_hue_expression.value.replace(/X/g, x).replace(/Y/g, y);
-      this.hue =  Math.abs(( (100 + Function("return " + hue_expression)()) % 200) - 100)
-      this.tegn()
-    }
-    
-    saturation_changed(x, y) {
-      var saturation_expression = get_saturation_expression.value.replace(/X/g, x).replace(/Y/g, y);
-      this.saturation = Math.abs(( (100 + Function("return " + saturation_expression)()) % 200) - 100)
-      this.tegn()
-      
-    }
-    lightness_changed(x, y) {
-      var lightness_expression = get_lightness_expression.value.replace(/X/g, x).replace(/Y/g, y);
-      this.lightness = Math.abs(( (100 + Function("return " + lightness_expression)()) % 200) - 100)
-      this.tegn()
+      "hsl(" + this.color + ", " + this.saturation + "%," + this.hue + "%)"
+    );
   }
 }
 
@@ -61,15 +31,15 @@ function v2a(vector1, vector2, unit) {
   vector1_length = Math.sqrt(vector1[0] ** 2 + vector1[1] ** 2);
   vector2_length = Math.sqrt(vector2[0] ** 2 + vector2[1] ** 2);
   vector_product = vector1[0] * vector2[0] + vector1[1] * vector2[1];
-  
+
   //angle as degrees
   if (unit == "deg") {
     var angle =
-    (Math.acos(vector_product / (vector1_length * vector2_length)) * 180) /
-    Math.PI;
+      (Math.acos(vector_product / (vector1_length * vector2_length)) * 180) /
+      Math.PI;
     return angle;
   }
-  
+
   //angle as radians
   else {
     var angle = Math.acos(vector_product / (vector1_length * vector2_length));
@@ -79,8 +49,8 @@ function v2a(vector1, vector2, unit) {
 
 
 // Fn =
-// (((1 + Math.sqrt(5)) / 2) ** (X+Y) - ((1 - Math.sqrt(5)) / 2) ** (X+Y)) /
-// Math.sqrt(5);
+  // (((1 + Math.sqrt(5)) / 2) ** (X+Y) - ((1 - Math.sqrt(5)) / 2) ** (X+Y)) /
+  // Math.sqrt(5);
 
 // console.log(math.i.re, 'real')
 // console.log(math.i.im, 'imaginary')
@@ -114,82 +84,41 @@ var matrix_squares = [];
 
 var redraw_background = true;
 
-var hue = get_hue_expression.value
-var saturation = get_saturation_expression.value
-var lightness = get_lightness_expression.value
-
-
-function change_hue_loop() {
-  size = (Math.abs(size_lower) + size_upper)/pixel_size;
-
-  tegnBrukBakgrunn("black");
-
-  for (let x = size_lower; x < size_upper; x++) {
-    for (let y = size_lower; y < size_upper; y++) {
-      matrix_squares[x][y].hue_changed((x*pixel_size) + size_lower, (y*pixel_size) + size_lower)
-    }
-  }
-}
-
-function change_saturation_loop() {
-  size = (Math.abs(size_lower) + size_upper)/pixel_size;
-  
-  tegnBrukBakgrunn("black");
-
-  for (let x = size_lower; x < size_upper; x++) {
-    for (let y = size_lower; y < size_upper; y++) {
-      matrix_squares[x][y].saturation_changed((x*pixel_size) + size_lower, (y*pixel_size) + size_lower)
-    }
-  }
-}
-
-function change_lightness_loop() {
-  size = (Math.abs(size_lower) + size_upper)/pixel_size;
-  
-  // tegnBrukBakgrunn("black");
-
-  for (let x = size_lower; x < size_upper; x++) {
-    for (let y = size_lower; y < size_upper; y++) {
-      matrix_squares[x][y].lightness_changed((x*pixel_size) + size_lower, (y*pixel_size) + size_lower)
-    }
-  }
-}
-
 function create_squares() {
   size = (Math.abs(size_lower) + size_upper)/pixel_size;
   
-  // tegnBrukBakgrunn("black");
+  tegnBrukBakgrunn("black");
 
-  for (let x = size_lower; x < size_upper; x++) {
+  for (let x = 0; x < size; x++) {
     if (matrix_squares[x] == undefined) {
       matrix_squares[x] = [];
     }
   
-    for (let y = size_lower; y < size_upper; y++) {
+    for (let y = 0; y < size; y++) {
       matrix_squares[x][y] = new Square(
-        ((x*pixel_size)),
-        ((y*pixel_size)),
-        hue,
-        saturation,
-        lightness,
+        ((x*pixel_size) + size_lower),
+        ((y*pixel_size) + size_lower),
+        change_color((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
+        change_saturation((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
+        change_hue((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
         pixel_size
       );
     }
   }
 
-  // for (let x = old_size_upper; x < size + old_size_lower; x++) {
-  //   for (let y = 0; y < size; y++) {
+  for (let x = old_size_upper; x < size + old_size_lower; x++) {
+    for (let y = 0; y < size; y++) {
 
-  //     matrix_squares[x][y] = new Square(
-  //       ((x*pixel_size) + size_lower),
-  //       ((y*pixel_size) + size_lower),
-  //       change_color((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
-  //       change_saturation((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
-  //       change_hue((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
-  //       pixel_size
-  //     );
-  //   }
-  // }
+      matrix_squares[x][y] = new Square(
+        ((x*pixel_size) + size_lower),
+        ((y*pixel_size) + size_lower),
+        change_color((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
+        change_saturation((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
+        change_hue((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
+        pixel_size
+      );
+    }
+  }
 }
 var scalex1 = size_lower;
 var scalex2 = size_upper;
@@ -204,54 +133,80 @@ var max_size = 0;
 
 function draw_squares() {
   if (redraw_background) {
-    // tegnBrukBakgrunn("black");
+    tegnBrukBakgrunn("black");
   }
   
-  // tegnBrukBakgrunn("black");
+  tegnBrukBakgrunn("black");
   size = (Math.abs(size_lower) + size_upper)/pixel_size; //TODO: Redundant?
 
   if (!scaled) {
     tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
-
   }
-  // tegnBrukBakgrunn("black");
+  tegnBrukBakgrunn("black");
 
-  for (let x = size_lower; x < size_upper; x++) {
-    for (let y = size_lower; y < size_upper; y++) {
+  for (let x = 0; x < matrix_squares.length; x++) {
+    for (let y = 0; y < matrix_squares.length; y++) {
       matrix_squares[x][y].tegn();
     }
   }
 }
 
-function change_hue(x, y) {
+function change_color(x, y) {
   
-    let returnme = get_hue_expression.value
-    .replace(/X/g, x)
-    .replace(/Y/g, y);
+  if (get_color_expression.value) {
+    //This is SUPER slow.
+    //for now i recommend just changing the returned expression to whatever you want
+    //ie. x*y*10 or something.
+    let returnme = get_color_expression.value.replace(/X/g, x).replace(/Y/g, y);
     return Function("return " + returnme)();
-
+  } else {
+    return 34;
+  }
 }
 
 function change_saturation(x, y) {
-
+  if (get_saturation_expression.value) {
+    //This is SUPER slow.
+    //for now i recommend just changing the returned expression to whatever you want
+    //ie. x*y*10 or something.
     let returnme = get_saturation_expression.value
       .replace(/X/g, x)
       .replace(/Y/g, y);
     return Function("return " + returnme)() % 100; //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden
+  } else {
+    return 54;
+  }
+}
+function change_hue(x, y) {
+  if (get_saturation_expression.value) {
+    let returnme = get_hue_expression.value.replace(/X/g, x).replace(/Y/g, y);
+
+    return Function("return " + returnme)() % 100; //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden 
+  } else {
+    return 50;
+  }
 }
 
-function change_lighness(x, y) {
-    let returnme = get_lighness_expression.value
-    .replace(/X/g, x)
-    .replace(/Y/g, y);
-    return Function("return " + returnme)() % 100; //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden 
-}
+const get_color_expression = document.getElementById("color_expression");
+const get_saturation_expression = document.getElementById(
+  "saturation_expression"
+);
+const get_hue_expression = document.getElementById("hue_expression");
+
+const get_size_lower = document.getElementById("size_lower");
+const get_size_upper = document.getElementById("size_upper");
+const get_pixel_size = document.getElementById("pixel_size");
 
 // const get_runspeed = document.getElementById("runspeed");
+
+get_size_upper.addEventListener("change", change_size_upper);
+get_size_lower.addEventListener("change", change_size_lower);
+
 // get_runspeed.addEventListener("change", change_runspeed);
 
-
-const get_pixel_size = document.getElementById("pixel_size");
+get_color_expression.addEventListener("change", color_changed);
+get_saturation_expression.addEventListener("change", color_changed);
+get_hue_expression.addEventListener("change", color_changed);
 get_pixel_size.addEventListener("change", change_pixel_size);
 
 var pixel_size = parseFloat(get_pixel_size.value);
@@ -414,9 +369,13 @@ absolute_heigth_square = canvas.height / size;
 
 canvas.addEventListener("mousemove", zoom_guider);
 
-canvas.addEventListener("mousedown", function (e) {get_cursor_position(canvas, e);});
+canvas.addEventListener("mousedown", function (e) {
+  get_cursor_position(canvas, e);
+});
 
-canvas.addEventListener("mouseup", function (e) {get_cursor_position(canvas, e);});
+canvas.addEventListener("mouseup", function (e) {
+  get_cursor_position(canvas, e);
+});
 
 window.onload = winInit;
 function winInit() {
@@ -426,7 +385,7 @@ function winInit() {
   //For refresh every second(no use for feature yet)
   // animId = setInterval(create_squares,1000/runspeed);
   tegnBrukBakgrunn("black");
-  // tegnBrukSynsfelt(0, 0.5, 0, 0.5);
+  tegnBrukSynsfelt(0, 1, 0, 1);
   // ctx.filter = 'hue-rotate(200deg)' INTERESTING!
 
   create_squares();
