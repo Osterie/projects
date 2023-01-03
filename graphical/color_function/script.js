@@ -112,7 +112,7 @@ function change_lightness_loop() {
     
 function create_squares() {
   
-  
+
   size = (Math.abs(size_lower) + size_upper)/pixel_size;
   
   tegnBrukBakgrunn("black");
@@ -147,7 +147,11 @@ function create_squares() {
     
 
 
-
+      img = new Image();
+      dataURL = canvas.toDataURL();
+    
+      img.src = dataURL;
+      
   // for (let x = old_size_upper; x < size + old_size_lower; x++) {
   //   for (let y = 0; y < size; y++) {
 
@@ -173,10 +177,13 @@ var square_hue = 50;
 var scaled = false;
 var max_size = 0;
 
+
+var img
+var dataURL
+
 function draw_squares() {
 tegnBrukBakgrunn("black");
 
-  
   // if (redraw_background) {
   //   tegnBrukBakgrunn("black");
   // }
@@ -266,7 +273,7 @@ function change_size_upper() {
   draw_squares();
 }
 
-var kjør = 1
+
 function change_size_lower() {
   // tegnBrukXY(-50, 50, -50, 50);
 
@@ -284,42 +291,66 @@ function change_size_lower() {
       // console.log('going to create new squarses')
       // create_squares();
 // 
-      console.log(new_size)
       // tegnBrukBakgrunn('black')
       tegnBrukXY(new_size, size_upper, new_size, size_upper);
 
-        matrix_squares[0][0] = new Square(
-          ((0*pixel_size)),
-          ((0*pixel_size)),
-          2*2*5 ,
-          // change_hue(x*pixel_size, y*pixel_size),
-          change_saturation(0*pixel_size, 0*pixel_size),
-          change_lightness(0*pixel_size, 0*pixel_size),
-          pixel_size
-        );
-        // kjør = 0
+
+      size = (Math.abs(new_size) + size_upper)/pixel_size;
+      // ctx.imageSmoothingQuality = "high"
+      ctx.imageSmoothingEnabled = false
+      // ctx.translate(50, 500)
+      // ctx.scale(0.5, 0.5)
+      console.log(size, 'sizesss', new_size)
+      tegnBrukBakgrunn('black')
+      console.log(old_size_lower-new_size, 'difference')
+      ctx.drawImage(img, (600/size), 0, ((600/size)*(size-(old_size_lower-new_size))).toFixed(4), ((600/size)*(size-(old_size_lower-new_size))).toFixed(4)); 
+      // ctx.drawImage(img, 600/size, 0, 600, 600); 
+      // (600/size)*old_size  
 
       // tegnBrukXY(-20 , 20, -20, 20);
 
-      // for (let x = new_size; x < old_size_lower; x++) {
-      //   if (matrix_squares[x] == undefined) {
-      //     matrix_squares[x] = [];
-      //   }
-      
-      //   for (let y = new_size; y < size_upper; y++) {
-      //     console.log('draaaas')
-      //     matrix_squares[x][y] = new Square(
-      //       ((x*pixel_size)),
-      //       ((y*pixel_size)),
-      //       x*y*5 ,
-      //       // change_hue(x*pixel_size, y*pixel_size),
-      //       change_saturation(x*pixel_size, y*pixel_size),
-      //       change_lightness(x*pixel_size, y*pixel_size),
-      //       pixel_size
-      //     );
-      //   }
-      // }
+//TODO: Make this a function?
+for (let x = new_size; x < old_size_lower; x++) {
+  if (matrix_squares[x] == undefined) {
+    matrix_squares[x] = [];
+  }
 
+  for (let y = new_size; y < size_upper; y++) {
+    matrix_squares[x][y] = new Square(
+      ((x*pixel_size)),
+      ((y*pixel_size)),
+      x*y*5 ,
+      // change_hue(x*pixel_size, y*pixel_size),
+      change_saturation(x*pixel_size, y*pixel_size),
+      change_lightness(x*pixel_size, y*pixel_size),
+      pixel_size
+    );
+   }
+}
+
+for (let x = new_size; x < size_upper; x++) {
+  if (matrix_squares[x] == undefined) {
+    matrix_squares[x] = [];
+  }
+
+  for (let y = new_size; y < old_size_lower; y++) {
+    matrix_squares[x][y] = new Square(
+      ((x*pixel_size)),
+      ((y*pixel_size)),
+      x*y*5 ,
+      // change_hue(x*pixel_size, y*pixel_size),
+      change_saturation(x*pixel_size, y*pixel_size),
+      change_lightness(x*pixel_size, y*pixel_size),
+      pixel_size
+      
+      );
+
+  }
+}
+img = new Image();
+dataURL = canvas.toDataURL();
+
+img.src = dataURL;
     }
   }
   
@@ -341,7 +372,7 @@ function change_size_lower() {
 
 // ctx.drawImage(img, x, y, width, height);
 
-
+//TODO: Use same draw image method for zoom_outline
 
 function change_pixel_size() {
   old_size_upper = 0;
@@ -467,27 +498,29 @@ function winInit() {
   tegnBrukBakgrunn("black");
   // ctx.filter = 'hue-rotate(200deg)' INTERESTING!
   tegnBrukSynsfelt(0,1,0,1)
-  create_squares();
   
-  var img = new Image();
-  var dataURL = canvas.toDataURL();
-  
-  draw_squares();
-  img.src = dataURL;
-  
-  ctx.drawImage(img, 0, 0, 575, 575);
 
-  tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
-  tegnBrukXY(-10, 10, -10, 10);
-  
-  matrix_squares[0][100] = new Square(
-    ((9*pixel_size)),
-    ((9*pixel_size)),
-    5*5*5,
-    75,
-    75,
-    pixel_size
-  );
+  create_squares();
+
+
+
+
+  // draw_squares();
+
+  // tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
+  // tegnBrukXY(-10, 11, -10, 11);
+
+  // for (let i = -10; i < 11; i++) {
+  //   matrix_squares[0][100+i] = new Square(
+  //     ((10*pixel_size)),
+  //     ((i*pixel_size)),
+  //     i*100,
+  //     100,
+  //     50,
+  //     pixel_size
+  //   );    
+  // }
+
   
 }
 
