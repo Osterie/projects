@@ -3,25 +3,15 @@
 //window.onload = winInit
 //også Funskjoner sikkert
 
-
 const get_hue_expression = document.getElementById("hue_expression");
 const get_saturation_expression = document.getElementById("saturation_expression");
 const get_lightness_expression = document.getElementById("lightness_expression");
 const get_size_lower = document.getElementById("size_lower");
 const get_size_upper = document.getElementById("size_upper");
 
-
-
-get_hue_expression.addEventListener("change",  function(){
-  hsl_loop(1)
-});
-get_saturation_expression.addEventListener("change",  function(){
-  hsl_loop(2)
-});
-get_lightness_expression.addEventListener("change",  function(){
-  hsl_loop(3)
-});
-
+get_hue_expression.addEventListener("change",  function(){hsl_loop(1)});
+get_saturation_expression.addEventListener("change",  function(){hsl_loop(2)});
+get_lightness_expression.addEventListener("change",  function(){hsl_loop(3)});
 get_size_lower.addEventListener("change", change_size_lower);
 get_size_upper.addEventListener("change", change_size_upper);
 
@@ -30,7 +20,7 @@ var canvas = elGetId("canvas");
 const ctx = canvas.getContext("2d");
 
 var animId;
-// var runspeed = 1;
+
 // var old_size_upper = 0;
 // var old_size_lower = 0;
 // var redraw_background = true;
@@ -114,63 +104,32 @@ function winInit() {
 }
 
 function hsl_loop(letter) {
+
   if (letter === 1) {
-    
     var letter_method = Square.prototype.hue_changed
   }
+
   else if (letter === 2) {
     var letter_method = Square.prototype.saturation_changed
-    
   }
+
   else if (letter === 3) {
-    var letter_method = Square.prototype.lightness_changed
-    
+    var letter_method = Square.prototype.lightness_changed;
   }
 
   tegnBrukBakgrunn("black");
 
   for (let x = size_lower; x < size_upper; x++) {
     for (let y = size_lower; y < size_upper; y++) {
-      letter_method.call(matrix_squares[x][y], (x*pixel_size) , (y*pixel_size) )
+      letter_method.call(matrix_squares[x][y], (x*pixel_size) , (y*pixel_size) );
     }
   }
+
   img = new Image();
   dataURL = canvas.toDataURL();
   img.src = dataURL;
+
 }
-
-// function change_saturation_loop() {
-//   // size = (Math.abs(size_lower) + size_upper)/pixel_size;
-
-//   tegnBrukBakgrunn("black");
-
-//   for (let x = size_lower; x < size_upper; x++) {
-//     for (let y = size_lower; y < size_upper; y++) {
-//       matrix_squares[x][y].saturation_changed((x*pixel_size), (y*pixel_size))
-//     }
-//   }
-//   img = new Image();
-//   dataURL = canvas.toDataURL();
-
-//   img.src = dataURL;
-// }
-
-
-// function change_lightness_loop() {
-//   // size = (Math.abs(size_lower) + size_upper)/pixel_size;
-
-//   tegnBrukBakgrunn("black");
-
-//   for (let x = size_lower; x < size_upper; x++) {
-//     for (let y = size_lower; y < size_upper; y++) {
-//       matrix_squares[x][y].lightness_changed((x*pixel_size), (y*pixel_size))
-//     }
-//   }
-//   img = new Image();
-//   dataURL = canvas.toDataURL();
-
-//   img.src = dataURL;
-// }
 
 function create_squares() {
 
@@ -199,35 +158,8 @@ function create_squares() {
 
     img = new Image();
     dataURL = canvas.toDataURL();
-
     img.src = dataURL;
-
-  // for (let x = old_size_upper; x < size + old_size_lower; x++) {
-  //   for (let y = 0; y < size; y++) {
-
-  //     matrix_squares[x][y] = new Square(
-  //       ((x*pixel_size) + size_lower),
-  //       ((y*pixel_size) + size_lower),
-  //       change_color((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
-  //       change_saturation((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
-  //       change_hue((x*pixel_size) + size_lower, (y*pixel_size) + size_lower),
-  //       pixel_size
-  //     );
-  //   }
-  // }
 }
-
-test = document.getElementById('test')
-test.addEventListener("click", testing)
-function testing() {
-
-  tegnBrukBakgrunn('black')
-
-
-
-
-}
-
 
 function change_hue(x, y) {
 
@@ -235,7 +167,6 @@ function change_hue(x, y) {
     .replace(/X/g, x)
     .replace(/Y/g, y);
     return Function("return " + returnme)();
-
 }
 
 function change_saturation(x, y) {
@@ -243,33 +174,21 @@ function change_saturation(x, y) {
     let returnme = get_saturation_expression.value
       .replace(/X/g, x)
       .replace(/Y/g, y);
-
     return  Math.abs(( (100 + Function("return " + returnme)()) % 200) - 100); //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden
 }
 
 function change_lightness(x, y) {
+
     let returnme = get_lightness_expression.value
     .replace(/X/g, x)
     .replace(/Y/g, y);
     return  Math.abs(( (100 + Function("return " + returnme)()) % 200) - 100); //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden
 }
 
-// const get_runspeed = document.getElementById("runspeed");
-// get_runspeed.addEventListener("change", change_runspeed);
-
-
 const get_pixel_size = document.getElementById("pixel_size");
 get_pixel_size.addEventListener("change", change_pixel_size);
-
 var pixel_size = parseFloat(get_pixel_size.value);
 
-function color_changed() {
-  // old_size_upper = 0;
-  // old_size_lower = 0;
-
-  create_squares();
-  draw_squares();
-}
 
 function change_size_upper() {
 
@@ -281,12 +200,19 @@ function change_size_upper() {
 
     if (new_size > max_size) {
       max_size = new_size;
-      // create_squares();
+      
+      size = (Math.abs(size_lower) + size_upper)/pixel_size;
+      // ctx.imageSmoothingQuality = "high"
+      ctx.imageSmoothingEnabled = false
+      tegnBrukBakgrunn('black')
+      ctx.drawImage(img, 0, (600/size)*(new_size-old_size_upper) , ((600/size)*(size-(new_size-old_size_upper))).toFixed(4), ((600/size)*(size-(new_size-old_size_upper))).toFixed(4));
+
+      new_pixels(size_lower, old_size_upper, size_upper, size_upper)
+
     }
   }
   size_upper = new_size;
 
-  draw_squares();
 }
 
 function change_size_lower() {
@@ -301,82 +227,23 @@ function change_size_lower() {
       max_size = new_size;
 
       // tegnBrukBakgrunn('black')
-      tegnBrukXY(new_size, size_upper, new_size, size_upper);
 
 
       size = (Math.abs(new_size) + size_upper)/pixel_size;
       // ctx.imageSmoothingQuality = "high"
       ctx.imageSmoothingEnabled = false
       tegnBrukBakgrunn('black')
+      
       ctx.drawImage(img, (600/size)*(old_size_lower-new_size), 0, ((600/size)*(size-(old_size_lower-new_size))).toFixed(4), ((600/size)*(size-(old_size_lower-new_size))).toFixed(4));
+      new_pixels(new_size, new_size, old_size_lower, size_upper)
 
-      new_pixels(new_size, old_size_lower, size_upper)
-//TODO: Make this a function? DONE
-
-//column
-      //from new_lower_limit, to old_lower_limit,
-      //
-      //dimesion_from to dimension_to
-      //new_size - dimension_start
-      //old_size_lower - dimension_width
-      //size_upper - dimension_length
-      // column_start to column_end
-      //amount of columns
-
-
-// for (let x = new_size; x < old_size_lower; x++) {
-//   if (matrix_squares[x] == undefined) {
-//     matrix_squares[x] = [];
-//   }
-
-
-//   //column_dimension
-
-//   for (let y = new_size; y < size_upper; y++) {
-//     matrix_squares[x][y] = new Square(
-//       ((x*pixel_size)),
-//       ((y*pixel_size)),
-//       change_hue(x*pixel_size, y*pixel_size),
-//       change_saturation(x*pixel_size, y*pixel_size),
-//       change_lightness(x*pixel_size, y*pixel_size),
-//       pixel_size
-//     );
-//    }
-// }
-
-    //row_dimension
-// for (let x = new_size; x < size_upper; x++) {
-//   if (matrix_squares[x] == undefined) {
-//     matrix_squares[x] = [];
-//   }
-
-    //amount of rows
-//   for (let y = new_size; y < old_size_lower; y++) {
-//     matrix_squares[x][y] = new Square(
-//       ((x*pixel_size)),
-//       ((y*pixel_size)),
-//       change_hue(x*pixel_size, y*pixel_size),
-//       change_saturation(x*pixel_size, y*pixel_size),
-//       change_lightness(x*pixel_size, y*pixel_size),
-//       pixel_size
-
-//       );
-
-//   }
-// }
-img = new Image();
-dataURL = canvas.toDataURL();
-
-img.src = dataURL;
     }
   }
 
   size_lower = new_size;
-  // create_squares();
-  // draw_squares();
+
 }
 
-//TODO: Use same draw image method for zoom_outline
 
 function change_pixel_size() {
   // old_size_upper = 0;
@@ -394,20 +261,9 @@ function change_pixel_size() {
 
   }
   create_squares();
-  draw_squares();
 }
 
-// function change_runspeed() {
-//   if (get_runspeed.value == 0) {
-//     clearInterval(animId);
-//   } else {
-//     if (animId) {
-//       clearInterval(animId);
-//     }
-//     runspeed = get_runspeed.value;
-//     animId = setInterval(draw_squares, 1000 / runspeed);
-//   }
-// }
+
 
 
 function get_cursor_position(canvas, event) {
@@ -488,15 +344,17 @@ canvas.addEventListener("mouseup", function (e) {get_cursor_position(canvas, e);
 
 
 
-function new_pixels(dimension_start, dimension_width, dimension_length) {
+function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimension_length) {
+  tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
 
   //column
-  for (let x = dimension_start; x < dimension_width; x++) {
+  for (let x = dimension_start_x; x < dimension_width; x++) {
     if (matrix_squares[x] == undefined) {
       matrix_squares[x] = [];
     }
 
-    for (let y = dimension_start; y < dimension_length; y++) {
+    for (let y = dimension_start_y; y < dimension_length; y++) {
+
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
         ((y*pixel_size)),
@@ -509,12 +367,12 @@ function new_pixels(dimension_start, dimension_width, dimension_length) {
   }
 
   //row
-  for (let x = dimension_start; x < dimension_length; x++) {
+  for (let x = dimension_start_y; x < dimension_length; x++) {
     if (matrix_squares[x] == undefined) {
       matrix_squares[x] = [];
     }
 
-    for (let y = dimension_start; y < dimension_width; y++) {
+    for (let y = dimension_start_x; y < dimension_width; y++) {
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
         ((y*pixel_size)),
@@ -525,6 +383,10 @@ function new_pixels(dimension_start, dimension_width, dimension_length) {
         );
       }
     }
+
+  img = new Image();
+  dataURL = canvas.toDataURL();
+  img.src = dataURL;
 
 }
 
@@ -625,17 +487,46 @@ function new_pixels(dimension_start, dimension_width, dimension_length) {
 // console.log(math.i.re, 'real')
 // console.log(math.i.im, 'imaginary')
 // console.log(math.multiply(math.i, 10).im, 'imaginary')
+
+
+//------------------START--------------------
+//TO BE USED ANOTHER TIME?
+// const get_runspeed = document.getElementById("runspeed");
+// get_runspeed.addEventListener("change", change_runspeed);
+// var runspeed = 1;
+// function change_runspeed() {
+//   if (get_runspeed.value == 0) {
+//     clearInterval(animId);
+//   } else {
+//     if (animId) {
+//       clearInterval(animId);
+//     }
+//     runspeed = get_runspeed.value;
+//     animId = setInterval(draw_squares, 1000 / runspeed);
+        //TODO: the draw_squares function must be made again if i want make a changing variable that changes every second or whatever
+//   }
+// }
+//------------------END--------------------
+
+//TODO: Research complex plotting or whatever, make an option to change to using complex numbers?
+
+//TODO: Create a settings button where settings can be changed/toggled?
+//TODO:! Add a button for the option to redraw the black background, creates very interesting patterns when the size of the pixels are < 1
+//TODO: Make an option to turn on the sawtooth pattern for hue too? and create lower and upper limit, this.hue =  Math.abs(( (100 + Function("return " + hue_expression)()) % 200) - 100)
+//!TODO: Create a option to toggle between clicking a button to run script and running script when a variable is changed.
+
+
 //TODO: Maybe will have to, but make a "enhance" button, if the image is unclear, it should be possible to redraw every pixel
 
 //TODO: Create option to make a variable that changes every second f.eks. goes from 1 to 10 then 10 to 1, call it n and then n can be
 // used in the color chooser
-//!TODO: create variable for width and height of squares(or just size of squares), must change array size to compensate
 
-//TODO:! Add a button for the option to redraw the black background, creates very interesting patterns when the size of the pixels are < 1
 //TODO: Is probably faster/more efficient to just change color of all squares when changing color, instead of creating new squares
-//TODO: Create vector to angle function and make it usable in hue, saturation and color variables.
 //TODO: Add more color models, i.e rgb and such
 
-//TODO: Make an option to turn on the sawtooth pattern for hue too? and create lower and upper limit, this.hue =  Math.abs(( (100 + Function("return " + hue_expression)()) % 200) - 100)
+//TODO: Use same draw image method for zoom_outline
 
-//!TODO: Create a option to toggle between clicking a button to run script and running script when a variable is changed.
+
+//*------------------------------------------------COMPLETED---------------------------------------
+//* Create variable for width and height of squares(or just size of squares), must change array size to compensate
+//* Create vector to angle function and make it usable in hue, saturation and color variables. Works for radians and degrees!
