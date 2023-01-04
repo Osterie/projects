@@ -1,3 +1,8 @@
+//struktur rekkefølge:
+//Klasser, globale variabler
+//window.onload = winInit
+//også Funskjoner sikkert
+
 const get_hue_expression = document.getElementById("hue_expression");
 const get_saturation_expression = document.getElementById("saturation_expression");
 const get_lightness_expression = document.getElementById("lightness_expression");
@@ -82,6 +87,10 @@ function change_hue_loop() {
       matrix_squares[x][y].hue_changed((x*pixel_size), (y*pixel_size))
     }
   }
+  img = new Image();
+  dataURL = canvas.toDataURL();
+
+  img.src = dataURL;
 }
 
 function change_saturation_loop() {
@@ -94,6 +103,10 @@ function change_saturation_loop() {
       matrix_squares[x][y].saturation_changed((x*pixel_size), (y*pixel_size))
     }
   }
+  img = new Image();
+  dataURL = canvas.toDataURL();
+
+  img.src = dataURL;
 }
 
 function change_lightness_loop() {
@@ -106,6 +119,10 @@ function change_lightness_loop() {
       matrix_squares[x][y].lightness_changed((x*pixel_size), (y*pixel_size))
     }
   }
+  img = new Image();
+  dataURL = canvas.toDataURL();
+
+  img.src = dataURL;
 }
 
 
@@ -132,8 +149,7 @@ function create_squares() {
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
         ((y*pixel_size)),
-        x*y*5 ,
-        // change_hue(x*pixel_size, y*pixel_size),
+        change_hue(x*pixel_size, y*pixel_size),
         change_saturation(x*pixel_size, y*pixel_size),
         change_lightness(x*pixel_size, y*pixel_size),
         pixel_size
@@ -257,7 +273,8 @@ function color_changed() {
 }
 
 function change_size_upper() {
-  new_size = parseInt(get_size_upper.value);
+  
+  var new_size = parseInt(get_size_upper.value);
 
   if (new_size > size_upper) {
     old_size_upper = size_upper;
@@ -265,7 +282,7 @@ function change_size_upper() {
 
     if (new_size > max_size) {
       max_size = new_size;
-      create_squares();
+      // create_squares();
     }
   }
   size_upper = new_size;
@@ -273,54 +290,46 @@ function change_size_upper() {
   draw_squares();
 }
 
-
 function change_size_lower() {
-  // tegnBrukXY(-50, 50, -50, 50);
-
-  new_size = parseInt(get_size_lower.value);
   
-
+  var new_size = parseInt(get_size_lower.value);
+  
   if (new_size < size_lower) {
     old_size_lower = size_lower;
     size_lower = new_size;
-
+  
     if (new_size < max_size) {
       max_size = new_size;
-      // console.log(new_size, old_size_lower)
-
-      // console.log('going to create new squarses')
-      // create_squares();
-// 
+  
       // tegnBrukBakgrunn('black')
       tegnBrukXY(new_size, size_upper, new_size, size_upper);
-
-
+  
+  
       size = (Math.abs(new_size) + size_upper)/pixel_size;
       // ctx.imageSmoothingQuality = "high"
       ctx.imageSmoothingEnabled = false
-      // ctx.translate(50, 500)
-      // ctx.scale(0.5, 0.5)
-      console.log(size, 'sizesss', new_size)
       tegnBrukBakgrunn('black')
-      console.log(old_size_lower-new_size, 'difference')
-      ctx.drawImage(img, (600/size), 0, ((600/size)*(size-(old_size_lower-new_size))).toFixed(4), ((600/size)*(size-(old_size_lower-new_size))).toFixed(4)); 
-      // ctx.drawImage(img, 600/size, 0, 600, 600); 
-      // (600/size)*old_size  
-
-      // tegnBrukXY(-20 , 20, -20, 20);
+      // ctx.drawImage(img, (600/size)*(old_size_lower-new_size), 0, ((600/size)*(size-(old_size_lower-new_size))).toFixed(4), ((600/size)*(size-(old_size_lower-new_size))).toFixed(4)); 
 
 //TODO: Make this a function?
+
+//column
+      //from new_lower_limit, to old_lower_limit, 
+      //
+      //amount of columns
 for (let x = new_size; x < old_size_lower; x++) {
   if (matrix_squares[x] == undefined) {
     matrix_squares[x] = [];
   }
-
+  
+  
+  //column_dimension
+  
   for (let y = new_size; y < size_upper; y++) {
     matrix_squares[x][y] = new Square(
       ((x*pixel_size)),
       ((y*pixel_size)),
-      x*y*5 ,
-      // change_hue(x*pixel_size, y*pixel_size),
+      change_hue(x*pixel_size, y*pixel_size),
       change_saturation(x*pixel_size, y*pixel_size),
       change_lightness(x*pixel_size, y*pixel_size),
       pixel_size
@@ -328,25 +337,26 @@ for (let x = new_size; x < old_size_lower; x++) {
    }
 }
 
-for (let x = new_size; x < size_upper; x++) {
-  if (matrix_squares[x] == undefined) {
-    matrix_squares[x] = [];
-  }
+    //row_dimension
+// for (let x = new_size; x < size_upper; x++) {
+//   if (matrix_squares[x] == undefined) {
+//     matrix_squares[x] = [];
+//   }
 
-  for (let y = new_size; y < old_size_lower; y++) {
-    matrix_squares[x][y] = new Square(
-      ((x*pixel_size)),
-      ((y*pixel_size)),
-      x*y*5 ,
-      // change_hue(x*pixel_size, y*pixel_size),
-      change_saturation(x*pixel_size, y*pixel_size),
-      change_lightness(x*pixel_size, y*pixel_size),
-      pixel_size
+    //amount of rows
+//   for (let y = new_size; y < old_size_lower; y++) {
+//     matrix_squares[x][y] = new Square(
+//       ((x*pixel_size)),
+//       ((y*pixel_size)),
+//       change_hue(x*pixel_size, y*pixel_size),
+//       change_saturation(x*pixel_size, y*pixel_size),
+//       change_lightness(x*pixel_size, y*pixel_size),
+//       pixel_size
       
-      );
+//       );
 
-  }
-}
+//   }
+// }
 img = new Image();
 dataURL = canvas.toDataURL();
 
@@ -524,6 +534,49 @@ function winInit() {
   
 }
 
+// new_pixels(new_size, size_upper, old_size_lower)
+
+//dimension
+
+function new_pixels(new_lower, new_upper, old_upper) {
+
+  //column
+  for (let x = new_lower; x < old_size_lower; x++) {
+    if (matrix_squares[x] == undefined) {
+      matrix_squares[x] = [];
+    }
+  
+    for (let y = new_lower; y < size_upper; y++) {
+      matrix_squares[x][y] = new Square(
+        ((x*pixel_size)),
+        ((y*pixel_size)),
+        change_hue(x*pixel_size, y*pixel_size),
+        change_saturation(x*pixel_size, y*pixel_size),
+        change_lightness(x*pixel_size, y*pixel_size),
+        pixel_size
+      );
+    }
+  }
+
+  //row
+  for (let x = new_lower; x < size_upper; x++) {
+    if (matrix_squares[x] == undefined) {
+      matrix_squares[x] = [];
+    }
+  
+    for (let y = new_lower; y < old_size_lower; y++) {
+      matrix_squares[x][y] = new Square(
+        ((x*pixel_size)),
+        ((y*pixel_size)),
+        change_hue(x*pixel_size, y*pixel_size),
+        change_saturation(x*pixel_size, y*pixel_size),
+        change_lightness(x*pixel_size, y*pixel_size),
+        pixel_size
+        );
+      }
+    }
+  
+}
 
 //------------------------------------------------------------------------------\\
 //! EXPLORE!
