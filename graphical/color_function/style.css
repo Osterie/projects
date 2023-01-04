@@ -18,7 +18,8 @@ div
 	cursor: crosshair;
 	border: solid 0px orange;
 	border-radius: 5px;
-	image-rendering: pixelated;}
+	/* image-rendering: pixelated; */
+}
 
 #canvas :last-child
 {

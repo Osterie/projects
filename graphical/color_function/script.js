@@ -3,18 +3,63 @@
 //window.onload = winInit
 //også Funskjoner sikkert
 
+
 const get_hue_expression = document.getElementById("hue_expression");
 const get_saturation_expression = document.getElementById("saturation_expression");
 const get_lightness_expression = document.getElementById("lightness_expression");
-
-get_hue_expression.addEventListener("change", change_hue_loop);
-get_saturation_expression.addEventListener("change", change_saturation_loop);
-get_lightness_expression.addEventListener("change", change_lightness_loop);
-
 const get_size_lower = document.getElementById("size_lower");
 const get_size_upper = document.getElementById("size_upper");
+
+
+
+get_hue_expression.addEventListener("change",  function(){
+  hsl_loop(1)
+});
+get_saturation_expression.addEventListener("change",  function(){
+  hsl_loop(2)
+});
+get_lightness_expression.addEventListener("change",  function(){
+  hsl_loop(3)
+});
+
 get_size_lower.addEventListener("change", change_size_lower);
 get_size_upper.addEventListener("change", change_size_upper);
+
+
+var canvas = elGetId("canvas");
+const ctx = canvas.getContext("2d");
+
+var animId;
+// var runspeed = 1;
+// var old_size_upper = 0;
+// var old_size_lower = 0;
+// var redraw_background = true;
+var size_lower = -10;
+var size_upper = 10;
+var size = (Math.abs(size_lower) + size_upper)/pixel_size;
+
+var hue = get_hue_expression.value
+var saturation = get_saturation_expression.value
+var lightness = get_lightness_expression.value
+
+var matrix_squares = [];
+
+
+//GUIDING BOX FOR RESIZE
+var down_x;
+var down_y;
+var up_x;
+var up_y;
+var zooming;
+var clicked_released_xpos;
+var clicked_released_ypos;
+var absolute_width_square = canvas.width / size;
+var absolute_heigth_square =  canvas.height / size;
+
+var max_size = 0;
+var img
+var dataURL
+
 
 
 class Square {
@@ -27,7 +72,7 @@ class Square {
     this.pixel_size = pixel_size;
     this.tegn()
   }
-  
+
   tegn() {
     tegnFyltRektangel(
       this.xpos,
@@ -37,113 +82,108 @@ class Square {
       "hsl(" + this.hue + ", " + this.saturation + "%," + this.lightness + "%)"
       );
     }
-    
-    hue_changed(x, y) {
-      var hue_expression = get_hue_expression.value.replace(/X/g, x).replace(/Y/g, y);
-      this.hue =  Function("return " + hue_expression)()
-      this.tegn()
-    }
-    
-    saturation_changed(x, y) {
-      var saturation_expression = get_saturation_expression.value.replace(/X/g, x).replace(/Y/g, y);
-      this.saturation = Math.abs(( (100 + Function("return " + saturation_expression)()) % 200) - 100)
-      this.tegn()
-      
-    }
-    lightness_changed(x, y) {
-      var lightness_expression = get_lightness_expression.value.replace(/X/g, x).replace(/Y/g, y);
-      this.lightness = Math.abs(( (100 + Function("return " + lightness_expression)()) % 200) - 100)
-      this.tegn()
+
+  hue_changed(x, y) {
+    var hue_expression = get_hue_expression.value.replace(/X/g, x).replace(/Y/g, y);
+    this.hue =  Function("return " + hue_expression)()
+    this.tegn()
+  }
+
+  saturation_changed(x, y) {
+    var saturation_expression = get_saturation_expression.value.replace(/X/g, x).replace(/Y/g, y);
+    this.saturation = Math.abs(( (100 + Function("return " + saturation_expression)()) % 200) - 100)
+    this.tegn()
+
+  }
+  lightness_changed(x, y) {
+    var lightness_expression = get_lightness_expression.value.replace(/X/g, x).replace(/Y/g, y);
+    this.lightness = Math.abs(( (100 + Function("return " + lightness_expression)()) % 200) - 100)
+    this.tegn()
   }
 }
 
-var ctx;
-var canvas = elGetId("canvas");
 
-var animId;
-var old_size_upper = 0;
-var old_size_lower = 0;
-var size_lower = -10;
-var size_upper = 10;
-var size = (Math.abs(size_lower) + size_upper)/pixel_size;
+window.onload = winInit;
 
-var matrix_squares = [];
+function winInit() {
+  // ctx.filter = 'hue-rotate(200deg)' INTERESTING!
+  tegnBrukCanvas("canvas");
+  tegnBrukBakgrunn("black");
+  tegnBrukSynsfelt(0,1,0,1)
+  create_squares();
+}
 
-var redraw_background = true;
-
-var hue = get_hue_expression.value
-var saturation = get_saturation_expression.value
-var lightness = get_lightness_expression.value
-
-// var runspeed = 1;
-
-function change_hue_loop() {
-  size = (Math.abs(size_lower) + size_upper)/pixel_size;
+function hsl_loop(letter) {
+  if (letter === 1) {
+    
+    var letter_method = Square.prototype.hue_changed
+  }
+  else if (letter === 2) {
+    var letter_method = Square.prototype.saturation_changed
+    
+  }
+  else if (letter === 3) {
+    var letter_method = Square.prototype.lightness_changed
+    
+  }
 
   tegnBrukBakgrunn("black");
 
   for (let x = size_lower; x < size_upper; x++) {
     for (let y = size_lower; y < size_upper; y++) {
-      matrix_squares[x][y].hue_changed((x*pixel_size), (y*pixel_size))
+      letter_method.call(matrix_squares[x][y], (x*pixel_size) , (y*pixel_size) )
     }
   }
   img = new Image();
   dataURL = canvas.toDataURL();
-
   img.src = dataURL;
 }
 
-function change_saturation_loop() {
-  size = (Math.abs(size_lower) + size_upper)/pixel_size;
-  
-  tegnBrukBakgrunn("black");
+// function change_saturation_loop() {
+//   // size = (Math.abs(size_lower) + size_upper)/pixel_size;
 
-  for (let x = size_lower; x < size_upper; x++) {
-    for (let y = size_lower; y < size_upper; y++) {
-      matrix_squares[x][y].saturation_changed((x*pixel_size), (y*pixel_size))
-    }
-  }
-  img = new Image();
-  dataURL = canvas.toDataURL();
+//   tegnBrukBakgrunn("black");
 
-  img.src = dataURL;
-}
+//   for (let x = size_lower; x < size_upper; x++) {
+//     for (let y = size_lower; y < size_upper; y++) {
+//       matrix_squares[x][y].saturation_changed((x*pixel_size), (y*pixel_size))
+//     }
+//   }
+//   img = new Image();
+//   dataURL = canvas.toDataURL();
 
-function change_lightness_loop() {
-  size = (Math.abs(size_lower) + size_upper)/pixel_size;
-  
-  tegnBrukBakgrunn("black");
-
-  for (let x = size_lower; x < size_upper; x++) {
-    for (let y = size_lower; y < size_upper; y++) {
-      matrix_squares[x][y].lightness_changed((x*pixel_size), (y*pixel_size))
-    }
-  }
-  img = new Image();
-  dataURL = canvas.toDataURL();
-
-  img.src = dataURL;
-}
+//   img.src = dataURL;
+// }
 
 
-    
+// function change_lightness_loop() {
+//   // size = (Math.abs(size_lower) + size_upper)/pixel_size;
+
+//   tegnBrukBakgrunn("black");
+
+//   for (let x = size_lower; x < size_upper; x++) {
+//     for (let y = size_lower; y < size_upper; y++) {
+//       matrix_squares[x][y].lightness_changed((x*pixel_size), (y*pixel_size))
+//     }
+//   }
+//   img = new Image();
+//   dataURL = canvas.toDataURL();
+
+//   img.src = dataURL;
+// }
+
 function create_squares() {
-  
 
   size = (Math.abs(size_lower) + size_upper)/pixel_size;
-  
+
   tegnBrukBakgrunn("black");
-  tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
-  // tegnBrukXY(-30, 30, -30, 30);
-  
-
-
+  // tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
 
   for (let x = size_lower; x < size_upper; x++) {
     if (matrix_squares[x] == undefined) {
       matrix_squares[x] = [];
     }
-  
+
     for (let y = size_lower; y < size_upper; y++) {
 
       matrix_squares[x][y] = new Square(
@@ -156,18 +196,12 @@ function create_squares() {
       );
     }
   }
-  
-  if (size >= 40) {
 
-      }
-    
+    img = new Image();
+    dataURL = canvas.toDataURL();
 
+    img.src = dataURL;
 
-      img = new Image();
-      dataURL = canvas.toDataURL();
-    
-      img.src = dataURL;
-      
   // for (let x = old_size_upper; x < size + old_size_lower; x++) {
   //   for (let y = 0; y < size; y++) {
 
@@ -182,57 +216,21 @@ function create_squares() {
   //   }
   // }
 }
-var scalex1 = size_lower;
-var scalex2 = size_upper;
-var scaley1 = size_lower;
-var scaley2 = size_upper;
-
-var square_saturation = 100;
-var square_hue = 50;
-
-var scaled = false;
-var max_size = 0;
-
-
-var img
-var dataURL
-
-function draw_squares() {
-tegnBrukBakgrunn("black");
-
-  // if (redraw_background) {
-  //   tegnBrukBakgrunn("black");
-  // }
-  
-  // tegnBrukBakgrunn("black");
-  // size = (Math.abs(size_lower) + size_upper)/pixel_size; //TODO: Redundant?
-
-  // if (!scaled) 
-  // {
-  // }
-  // tegnBrukBakgrunn("black");
-
-  // for (let x = size_lower; x < size_upper; x++) {
-  //   for (let y = size_lower; y < size_upper; y++) {
-  //     matrix_squares[x][y].tegn();
-  //   }
-  // }
-}
 
 test = document.getElementById('test')
 test.addEventListener("click", testing)
 function testing() {
-  
+
   tegnBrukBakgrunn('black')
 
-    
-    
-  
+
+
+
 }
 
 
 function change_hue(x, y) {
-  
+
     let returnme = get_hue_expression.value
     .replace(/X/g, x)
     .replace(/Y/g, y);
@@ -245,14 +243,15 @@ function change_saturation(x, y) {
     let returnme = get_saturation_expression.value
       .replace(/X/g, x)
       .replace(/Y/g, y);
-    return Function("return " + returnme)() % 100; //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden
+
+    return  Math.abs(( (100 + Function("return " + returnme)()) % 200) - 100); //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden
 }
 
 function change_lightness(x, y) {
     let returnme = get_lightness_expression.value
     .replace(/X/g, x)
     .replace(/Y/g, y);
-    return Function("return " + returnme)() % 100; //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden 
+    return  Math.abs(( (100 + Function("return " + returnme)()) % 200) - 100); //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden
 }
 
 // const get_runspeed = document.getElementById("runspeed");
@@ -265,19 +264,19 @@ get_pixel_size.addEventListener("change", change_pixel_size);
 var pixel_size = parseFloat(get_pixel_size.value);
 
 function color_changed() {
-  old_size_upper = 0;
-  old_size_lower = 0;
+  // old_size_upper = 0;
+  // old_size_lower = 0;
 
   create_squares();
   draw_squares();
 }
 
 function change_size_upper() {
-  
+
   var new_size = parseInt(get_size_upper.value);
 
   if (new_size > size_upper) {
-    old_size_upper = size_upper;
+    var old_size_upper = size_upper;
     size_upper = new_size;
 
     if (new_size > max_size) {
@@ -291,51 +290,59 @@ function change_size_upper() {
 }
 
 function change_size_lower() {
-  
+
   var new_size = parseInt(get_size_lower.value);
-  
+
   if (new_size < size_lower) {
-    old_size_lower = size_lower;
+    var old_size_lower = size_lower;
     size_lower = new_size;
-  
+
     if (new_size < max_size) {
       max_size = new_size;
-  
+
       // tegnBrukBakgrunn('black')
       tegnBrukXY(new_size, size_upper, new_size, size_upper);
-  
-  
+
+
       size = (Math.abs(new_size) + size_upper)/pixel_size;
       // ctx.imageSmoothingQuality = "high"
       ctx.imageSmoothingEnabled = false
       tegnBrukBakgrunn('black')
-      // ctx.drawImage(img, (600/size)*(old_size_lower-new_size), 0, ((600/size)*(size-(old_size_lower-new_size))).toFixed(4), ((600/size)*(size-(old_size_lower-new_size))).toFixed(4)); 
+      ctx.drawImage(img, (600/size)*(old_size_lower-new_size), 0, ((600/size)*(size-(old_size_lower-new_size))).toFixed(4), ((600/size)*(size-(old_size_lower-new_size))).toFixed(4));
 
-//TODO: Make this a function?
+      new_pixels(new_size, old_size_lower, size_upper)
+//TODO: Make this a function? DONE
 
 //column
-      //from new_lower_limit, to old_lower_limit, 
+      //from new_lower_limit, to old_lower_limit,
       //
+      //dimesion_from to dimension_to
+      //new_size - dimension_start
+      //old_size_lower - dimension_width
+      //size_upper - dimension_length
+      // column_start to column_end
       //amount of columns
-for (let x = new_size; x < old_size_lower; x++) {
-  if (matrix_squares[x] == undefined) {
-    matrix_squares[x] = [];
-  }
-  
-  
-  //column_dimension
-  
-  for (let y = new_size; y < size_upper; y++) {
-    matrix_squares[x][y] = new Square(
-      ((x*pixel_size)),
-      ((y*pixel_size)),
-      change_hue(x*pixel_size, y*pixel_size),
-      change_saturation(x*pixel_size, y*pixel_size),
-      change_lightness(x*pixel_size, y*pixel_size),
-      pixel_size
-    );
-   }
-}
+
+
+// for (let x = new_size; x < old_size_lower; x++) {
+//   if (matrix_squares[x] == undefined) {
+//     matrix_squares[x] = [];
+//   }
+
+
+//   //column_dimension
+
+//   for (let y = new_size; y < size_upper; y++) {
+//     matrix_squares[x][y] = new Square(
+//       ((x*pixel_size)),
+//       ((y*pixel_size)),
+//       change_hue(x*pixel_size, y*pixel_size),
+//       change_saturation(x*pixel_size, y*pixel_size),
+//       change_lightness(x*pixel_size, y*pixel_size),
+//       pixel_size
+//     );
+//    }
+// }
 
     //row_dimension
 // for (let x = new_size; x < size_upper; x++) {
@@ -352,7 +359,7 @@ for (let x = new_size; x < old_size_lower; x++) {
 //       change_saturation(x*pixel_size, y*pixel_size),
 //       change_lightness(x*pixel_size, y*pixel_size),
 //       pixel_size
-      
+
 //       );
 
 //   }
@@ -363,32 +370,19 @@ dataURL = canvas.toDataURL();
 img.src = dataURL;
     }
   }
-  
+
   size_lower = new_size;
   // create_squares();
   // draw_squares();
 }
 
-
-// const dataURL = canvas.toDataURL();
-
-
-// const img = new Image();
-// img.src = dataURL;
-
-// img.onload = function() {
-//   ctx.drawImage(img, 0, 0);
-// };
-
-// ctx.drawImage(img, x, y, width, height);
-
 //TODO: Use same draw image method for zoom_outline
 
 function change_pixel_size() {
-  old_size_upper = 0;
-  old_size_lower = 0;
+  // old_size_upper = 0;
+  // old_size_lower = 0;
   matrix_squares = [];
-  
+
 
   if (get_pixel_size.value.includes('\'')){
     pixel_size = get_pixel_size.value.replace( /\'/g , '')
@@ -415,138 +409,94 @@ function change_pixel_size() {
 //   }
 // }
 
-var down_x;
-var down_y;
-var up_x;
-var up_y;
-var zooming;
-var list1;
-var list2;
-var absolute_width_square = canvas.width / size;;
-var absolute_heigth_square =  canvas.height / size;;
 
 function get_cursor_position(canvas, event) {
   const rect = canvas.getBoundingClientRect();
 
   if (event.type == "mousedown") {
+
+
+    canvas.addEventListener("mousemove", zoom_guider);
+
     absolute_width_square = canvas.width / size;
     absolute_heigth_square = canvas.height / size;
 
     zooming = true;
-    //finds the absolute coordinates clicked (f.eks 400) and
+    //finds the absolute coordinates clicked
     down_x = (event.clientX - rect.left) / absolute_width_square + size_lower;
     down_y = -((event.clientY - rect.top) / absolute_width_square + size_lower);
-    list1 = [down_x];
-    list2 = [-down_y];
-  } else if (event.type == "mouseup") {
+    clicked_released_xpos = [down_x];
+    clicked_released_ypos = [down_y];
+  }
+  else if (event.type == "mouseup") {
+    canvas.removeEventListener("mousemove", zoom_guider);
     zooming = false;
     up_x = (event.clientX - rect.left) / absolute_width_square + size_lower;
     up_y = -((event.clientY - rect.top) / absolute_heigth_square + size_lower);
 
-    scaled = true;
+    clicked_released_xpos = [down_x, up_x];
+    clicked_released_ypos = [down_y, up_y];
+
+    clicked_released_xpos.sort(function (a, b) {return a - b;});
+    clicked_released_ypos.sort(function (a, b) {return a - b;});
     if (event.ctrlKey) {
-      scaled = false;
+      tegnBrukXY(size_lower, size_upper, size_lower, size_upper)
+      // create_squares();
+    }
+    else{
+      tegnBrukXY(clicked_released_xpos[0], clicked_released_xpos[1], clicked_released_ypos[0], clicked_released_ypos[1]);
     }
 
-    list1 = [down_x, up_x];
-    list2 = [down_y, up_y];
 
-    list1.sort(function (a, b) {
-      return a - b;
-    });
-    list2.sort(function (a, b) {
-      return a - b;
-    });
 
-    tegnBrukXY(list1[0], list1[1], list2[0], list2[1]);
-
+    //TODO: No point in drawing everything of only a small part is shown,
+    //make it so that you can only draw complete squares with zoom_guider, and only draw and show the pixels "selected"
     create_squares();
-    draw_squares();
   }
 }
 
 function zoom_guider() {
-  if (zooming) {
-    tegnBrukBakgrunn("black");
-    const rect = canvas.getBoundingClientRect();
-    
-absolute_width_square = canvas.width / size;
-absolute_heigth_square = canvas.height / size;
+  tegnBrukBakgrunn("black");
+  const rect = canvas.getBoundingClientRect();
 
+  absolute_width_square = canvas.width / size;
+  absolute_heigth_square = canvas.height / size;
 
-    current_x =
-      (event.clientX - rect.left) / absolute_width_square + size_lower;
-    current_y =
-      (event.clientY - rect.top) / absolute_heigth_square + size_lower;
+  current_x =
+    (event.clientX - rect.left) / absolute_width_square + size_lower;
+  current_y =
+    (event.clientY - rect.top) / absolute_heigth_square + size_lower;
 
-    var difference = Math.abs(size_lower) - Math.abs(size_upper);
-    list1[1] = current_x;
-    list2[1] = current_y;
+  var difference = Math.abs(size_lower) - Math.abs(size_upper);
+  clicked_released_xpos[1] = current_x;
+  clicked_released_ypos[1] = current_y;
 
-    tegnFirkant(
-      (list1[0]),
-      (-list2[0] - difference),
-      current_x,
-      (-current_y - difference),
-      "blue",
-      false
-    );
-  }
+  tegnFirkant(
+    (clicked_released_xpos[0]),
+    (clicked_released_ypos[0] - difference),
+    current_x,
+    (-current_y - difference),
+    "blue",
+    false
+  );
 }
 
-canvas.addEventListener("mousemove", zoom_guider);
 canvas.addEventListener("mousedown", function (e) {get_cursor_position(canvas, e);});
 canvas.addEventListener("mouseup", function (e) {get_cursor_position(canvas, e);});
 
-window.onload = winInit;
-function winInit() {
-  ctx = canvas.getContext("2d");
-  tegnBrukCanvas("canvas");
-
-  //For refresh every second(no use for feature yet)
-  // animId = setInterval(create_squares,1000/runspeed);
-  tegnBrukBakgrunn("black");
-  // ctx.filter = 'hue-rotate(200deg)' INTERESTING!
-  tegnBrukSynsfelt(0,1,0,1)
-  
-
-  create_squares();
 
 
 
 
-  // draw_squares();
-
-  // tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
-  // tegnBrukXY(-10, 11, -10, 11);
-
-  // for (let i = -10; i < 11; i++) {
-  //   matrix_squares[0][100+i] = new Square(
-  //     ((10*pixel_size)),
-  //     ((i*pixel_size)),
-  //     i*100,
-  //     100,
-  //     50,
-  //     pixel_size
-  //   );    
-  // }
-
-  
-}
-
-// new_pixels(new_size, size_upper, old_size_lower)
-
-//dimension
-
-function new_pixels(new_lower, new_upper, old_upper) {
+function new_pixels(dimension_start, dimension_width, dimension_length) {
 
   //column
-  for (let x = new_lower; x < old_size_lower; x++) {
+  for (let x = dimension_start; x < dimension_width; x++) {
     if (matrix_squares[x] == undefined) {
       matrix_squares[x] = [];
     }
-  
-    for (let y = new_lower; y < size_upper; y++) {
+
+    for (let y = dimension_start; y < dimension_length; y++) {
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
         ((y*pixel_size)),
@@ -559,12 +509,12 @@ function new_pixels(new_lower, new_upper, old_upper) {
   }
 
   //row
-  for (let x = new_lower; x < size_upper; x++) {
+  for (let x = dimension_start; x < dimension_length; x++) {
     if (matrix_squares[x] == undefined) {
       matrix_squares[x] = [];
     }
-  
-    for (let y = new_lower; y < old_size_lower; y++) {
+
+    for (let y = dimension_start; y < dimension_width; y++) {
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
         ((y*pixel_size)),
@@ -575,7 +525,7 @@ function new_pixels(new_lower, new_upper, old_upper) {
         );
       }
     }
-  
+
 }
 
 //------------------------------------------------------------------------------\\
@@ -675,6 +625,7 @@ function new_pixels(new_lower, new_upper, old_upper) {
 // console.log(math.i.re, 'real')
 // console.log(math.i.im, 'imaginary')
 // console.log(math.multiply(math.i, 10).im, 'imaginary')
+//TODO: Maybe will have to, but make a "enhance" button, if the image is unclear, it should be possible to redraw every pixel
 
 //TODO: Create option to make a variable that changes every second f.eks. goes from 1 to 10 then 10 to 1, call it n and then n can be
 // used in the color chooser
@@ -687,4 +638,4 @@ function new_pixels(new_lower, new_upper, old_upper) {
 
 //TODO: Make an option to turn on the sawtooth pattern for hue too? and create lower and upper limit, this.hue =  Math.abs(( (100 + Function("return " + hue_expression)()) % 200) - 100)
 
-//!TODO: Create a option to toggle between clicking a button to run script and running script when a variable is changed. 
+//!TODO: Create a option to toggle between clicking a button to run script and running script when a variable is changed.

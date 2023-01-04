@@ -127,6 +127,13 @@ Most useful keyboard shortcuts VSCODE
 
 *Toggle Word Wrap - Alt + Z
 
+!Go To Source Control - Ctrl + Shift + G, G
+
+!Explorer - Ctrl + Shift + E
+
+!Extensions - Ctrl + Shift + X
+
+
 
 -----------------EXTENSIONS-----------------
 
@@ -148,6 +155,10 @@ Most useful keyboard shortcuts VSCODE
 !Maximize Window - Windows + UpArrow
 
 ! Minimize All Windows - Windows + M
+
+?Open system settings - Win + I
+
+?Open cmd - Ctrl + Shift + C
 
 
 -----------------SEARCH ENGINE-----------------
