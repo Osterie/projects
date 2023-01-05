@@ -8,12 +8,14 @@ const get_saturation_expression = document.getElementById("saturation_expression
 const get_lightness_expression = document.getElementById("lightness_expression");
 const get_size_lower = document.getElementById("size_lower");
 const get_size_upper = document.getElementById("size_upper");
+const get_upscale = document.getElementById("upscale");
 
 get_hue_expression.addEventListener("change",  function(){hsl_loop(1)});
 get_saturation_expression.addEventListener("change",  function(){hsl_loop(2)});
 get_lightness_expression.addEventListener("change",  function(){hsl_loop(3)});
 get_size_lower.addEventListener("change", change_size_lower);
 get_size_upper.addEventListener("change", change_size_upper);
+get_upscale.addEventListener("click", function() {create_squares(size_lower, size_upper)})
 
 var canvas = elGetId("canvas");
 canvas.addEventListener("mousedown", function (e) {get_cursor_position(canvas, e);});
@@ -73,25 +75,25 @@ class Square {
       this.ypos,
       this.pixel_size,
       this.pixel_size,
-      "hsl(" + this.hue + ", " + this.saturation + "%," + this.lightness + "%)"
+      `hsl( ${this.hue}, ${this.saturation}%, ${this.lightness}%)`
       );
     }
 
   hue_changed(x, y) {
     var hue_expression = get_hue_expression.value.replace(/X/g, x).replace(/Y/g, y);
-    this.hue =  Function("return " + hue_expression)()
+    this.hue =  Function(`return + ${hue_expression}`)()
     this.tegn()
   }
 
   saturation_changed(x, y) {
     var saturation_expression = get_saturation_expression.value.replace(/X/g, x).replace(/Y/g, y);
-    this.saturation = Math.abs(( (100 + Function("return " + saturation_expression)()) % 200) - 100)
+    this.saturation = Math.abs(( (100 + Function(`return ${saturation_expression}`)()) % 200) - 100)
     this.tegn()
 
   }
   lightness_changed(x, y) {
     var lightness_expression = get_lightness_expression.value.replace(/X/g, x).replace(/Y/g, y);
-    this.lightness = Math.abs(( (100 + Function("return " + lightness_expression)()) % 200) - 100)
+    this.lightness = Math.abs(( (100 + Function(`return ${lightness_expression}`)()) % 200) - 100)
     this.tegn()
   }
 }
@@ -100,11 +102,11 @@ class Square {
 window.onload = winInit;
 
 function winInit() {
-  // ctx.filter = 'hue-rotate(200deg)' INTERESTING!
+  // ctx.filter = "hue-rotate(200deg)" INTERESTING!
   tegnBrukCanvas("canvas");
   tegnBrukBakgrunn("black");
   tegnBrukSynsfelt(0,1,0,1)
-  create_squares();
+  create_squares(size_lower, size_upper);
 }
 
 function hsl_loop(letter) {
@@ -135,34 +137,9 @@ function hsl_loop(letter) {
 
 }
 
-function create_squares() {
-
+function create_squares(start, end) {
   size = (Math.abs(size_lower) + size_upper)/pixel_size;
-
-  tegnBrukBakgrunn("black");
-  // tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
-
-  for (let x = (size_lower); x < (size_upper); x++) {
-    if (matrix_squares[x] == undefined) {
-      matrix_squares[x] = [];
-    }
-
-    for (let y = (size_lower); y < (size_upper); y++) {
-
-      matrix_squares[x][y] = new Square(
-        ((x*pixel_size)),
-        ((y*pixel_size)),
-        change_hue(x*pixel_size, y*pixel_size),
-        change_saturation(x*pixel_size, y*pixel_size),
-        change_lightness(x*pixel_size, y*pixel_size),
-        pixel_size
-      );
-    }
-  }
-
-    img = new Image();
-    dataURL = canvas.toDataURL();
-    img.src = dataURL;
+  new_pixels(start, start, end, end)
 }
 
 function change_hue(x, y) {
@@ -170,7 +147,7 @@ function change_hue(x, y) {
     let returnme = get_hue_expression.value
     .replace(/X/g, x)
     .replace(/Y/g, y);
-    return Function("return " + returnme)();
+    return Function(`return ${returnme}`)();
 }
 
 function change_saturation(x, y) {
@@ -178,7 +155,7 @@ function change_saturation(x, y) {
     let returnme = get_saturation_expression.value
       .replace(/X/g, x)
       .replace(/Y/g, y);
-    return  Math.abs(( (100 + Function("return " + returnme)()) % 200) - 100); //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden
+    return  Math.abs(( (100 + Function(`return + ${returnme}`)()) % 200) - 100);
 }
 
 function change_lightness(x, y) {
@@ -186,7 +163,7 @@ function change_lightness(x, y) {
     let returnme = get_lightness_expression.value
     .replace(/X/g, x)
     .replace(/Y/g, y);
-    return  Math.abs(( (100 + Function("return " + returnme)()) % 200) - 100); //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden
+    return  Math.abs(( (100 + Function(`return + ${returnme}`)()) % 200) - 100); 
 }
 
 function change_size_upper() {
@@ -201,9 +178,8 @@ function change_size_upper() {
       max_size = new_size;
       
       size = (Math.abs(size_lower) + size_upper)/pixel_size;
-      // ctx.imageSmoothingQuality = "high"
-      ctx.imageSmoothingEnabled = false
-      tegnBrukBakgrunn('black')
+      tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
+
       ctx.drawImage(img, 0, (600/size)*(new_size-old_size_upper) , ((600/size)*(size-(new_size-old_size_upper))).toFixed(4), ((600/size)*(size-(new_size-old_size_upper))).toFixed(4));
 
       new_pixels(size_lower, old_size_upper, size_upper, size_upper)
@@ -227,8 +203,10 @@ function change_size_lower() {
 
       size = (Math.abs(new_size) + size_upper)/pixel_size;
 
-      tegnBrukBakgrunn('black')
+      // tegnBrukBakgrunn("black")
+      tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
       
+
       ctx.drawImage(img, (600/size)*(old_size_lower-new_size), 0, ((600/size)*(size-(old_size_lower-new_size))).toFixed(4), ((600/size)*(size-(old_size_lower-new_size))).toFixed(4));
       new_pixels(new_size, new_size, old_size_lower, size_upper)
     }
@@ -241,8 +219,8 @@ function change_pixel_size() {
 
   // matrix_squares = [];
 
-  if (get_pixel_size.value.includes('\'')){
-    pixel_size = get_pixel_size.value.replace( /\'/g , '')
+  if (get_pixel_size.value.includes("\"")){
+    pixel_size = get_pixel_size.value.replace( /\"/g , "")
   }
   else{
     pixel_size = parseFloat(get_pixel_size.value);
@@ -251,7 +229,7 @@ function change_pixel_size() {
   size_lower = (get_size_lower.value/pixel_size)
   size_upper = (get_size_upper.value/pixel_size)
   size = (Math.abs(size_lower) + size_upper)
-  create_squares();
+  create_squares(size_lower, size_upper);
 }
 
 //FIXME: pixel_size creates a bug when changing size 
@@ -297,12 +275,11 @@ function get_cursor_position(canvas, event) {
 
     else{
       tegnBrukXY(clicked_released_xpos[0], clicked_released_xpos[1], clicked_released_ypos[0] - difference, clicked_released_ypos[1] - difference);
-      // tegnBrukXY(-30, 30,-30, 30);
     }
 
     //TODO: No point in drawing everything of only a small part is shown,
     //make it so that you can only draw complete squares with zoom_guider, and only draw and show the pixels "selected"
-    create_squares();
+    create_squares(size_lower, size_upper);
   }
 }
 
@@ -333,10 +310,20 @@ function zoom_guider() {
     false
   );
 }
-
+//FIXME: bug when changing size for values not defined, ie. log(x) when x is negative
 function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimension_length) {
-  tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
-
+  // matrix_squares[0] = []
+  // matrix_squares[0][0] = new Square(
+  //   ((0*pixel_size)),
+  //   ((0*pixel_size)),
+  //   NaN,
+  //   change_saturation(100*pixel_size, 100*pixel_size),
+  //   change_lightness(100*pixel_size, 100*pixel_size),
+  //   20
+  //   );
+  //   console.log(matrix_squares)
+  //   return
+    
   //column
   for (let x = dimension_start_x; x < dimension_width; x++) {
     if (matrix_squares[x] == undefined) {
@@ -344,7 +331,6 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
     }
 
     for (let y = dimension_start_y; y < dimension_length; y++) {
-
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
         ((y*pixel_size)),
@@ -355,6 +341,13 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
       );
     }
   }
+  if (dimension_start_x == dimension_start_y && dimension_width == dimension_length ) {
+    img = new Image();
+    dataURL = canvas.toDataURL();
+    img.src = dataURL;
+    console.log(matrix_squares)
+    return
+  }
 
   //row
   for (let x = dimension_start_y; x < dimension_length; x++) {
@@ -363,6 +356,7 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
     }
 
     for (let y = dimension_start_x; y < dimension_width; y++) {
+
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
         ((y*pixel_size)),
@@ -373,7 +367,7 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
         );
       }
     }
-
+  console.log(matrix_squares)
   img = new Image();
   dataURL = canvas.toDataURL();
   img.src = dataURL;
@@ -382,6 +376,9 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
 //------------------------------------------------------------------------------\\
 //! EXPLORE!
 //------------------------------------------------------------------------------\\
+
+//math.js library is recommended
+//npm install mathjs
 
 // WITH SIZE 100 (and also try 1000?:)
 // Change color with these:
@@ -447,7 +444,7 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
 //try ! Math.random() * (X+Y) and saturation Math.random() * ((abs(X)+abs(Y))) and hue Math.random() * ((abs(X)+abs(Y)))
 //try v2a([X,Y], [Y+Y,X*2])
 //try v2a([X,Y], [X,10])
-//try ! v2a([  (((1 + Math.sqrt(5)) / 2) ** (X+Y) - ((1 - Math.sqrt(5)) / 2) ** (X+Y)) /   Math.sqrt(5), X*Y*10], [0,1], 'deg')
+//try ! v2a([  (((1 + Math.sqrt(5)) / 2) ** (X+Y) - ((1 - Math.sqrt(5)) / 2) ** (X+Y)) /   Math.sqrt(5), X*Y*10], [0,1], "deg")
 //try ! (((X)**2 + (Y)**2)**2 - ((X)**2 - (Y)**2) )/(X+Y)/100
 //try ! ((X)**2 + (Y)**2)**2 /(X*Y)/1
 
@@ -460,8 +457,7 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
 
 
 
-//math.js library is recommended
-//npm install mathjs
+
 
 //Lemniscate
 // ((X)**2 + (Y)**2)**2 - ((X)**2 - (Y)**2)
@@ -473,9 +469,9 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
 // (((1 + Math.sqrt(5)) / 2) ** (X+Y) - ((1 - Math.sqrt(5)) / 2) ** (X+Y)) /
 // Math.sqrt(5);
 
-// console.log(math.i.re, 'real')
-// console.log(math.i.im, 'imaginary')
-// console.log(math.multiply(math.i, 10).im, 'imaginary')
+// console.log(math.i.re, "real")
+// console.log(math.i.im, "imaginary")
+// console.log(math.multiply(math.i, 10).im, "imaginary")
 
 
 //------------------START--------------------
@@ -497,6 +493,8 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
 // }
 //------------------END--------------------
 
+//TODO: Minor fix in the new_pixels function, it creates the corner piece twice
+
 //TODO: Research complex plotting or whatever, make an option to change to using complex numbers?
 
 //TODO: Create a settings button where settings can be changed/toggled?
@@ -505,17 +503,18 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
 //!TODO: Create a option to toggle between clicking a button to run script and running script when a variable is changed.
 
 
-//TODO: Maybe will have to, but make a "enhance" button, if the image is unclear, it should be possible to redraw every pixel
 
 //TODO: Create option to make a variable that changes every second f.eks. goes from 1 to 10 then 10 to 1, call it n and then n can be
 // used in the color chooser
 
-//TODO: Is probably faster/more efficient to just change color of all squares when changing color, instead of creating new squares
 //TODO: Add more color models, i.e rgb and such
 
-//TODO: Use same draw image method for zoom_outline
 
 
 //*------------------------------------------------COMPLETED---------------------------------------
 //* Create variable for width and height of squares(or just size of squares), must change array size to compensate
 //* Create vector to angle function and make it usable in hue, saturation and color variables. Works for radians and degrees!
+//* Make a smooth tranistion for saturation and lighness
+//* Maybe will have to, but make a "enhance" button, if the image is unclear, it should be possible to redraw every pixel
+//* It is probably faster/more efficient to just change color of all squares when changing color, instead of creating new squares
+//* Use same draw image method for zoom_outline
