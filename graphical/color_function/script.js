@@ -15,9 +15,13 @@ get_lightness_expression.addEventListener("change",  function(){hsl_loop(3)});
 get_size_lower.addEventListener("change", change_size_lower);
 get_size_upper.addEventListener("change", change_size_upper);
 
-
 var canvas = elGetId("canvas");
+canvas.addEventListener("mousedown", function (e) {get_cursor_position(canvas, e);});
+canvas.addEventListener("mouseup", function (e) {get_cursor_position(canvas, e);});
+
 const ctx = canvas.getContext("2d");
+// ctx.imageSmoothingQuality = "high"
+ctx.imageSmoothingEnabled = false
 
 var animId;
 
@@ -34,21 +38,21 @@ var lightness = get_lightness_expression.value
 
 var matrix_squares = [];
 
-
 //GUIDING BOX FOR RESIZE
-var down_x;
-var down_y;
-var up_x;
-var up_y;
-var zooming;
-var clicked_released_xpos;
-var clicked_released_ypos;
-var absolute_width_square = canvas.width / size;
-var absolute_heigth_square =  canvas.height / size;
+
 
 var max_size = 0;
 var img
 var dataURL
+
+const get_pixel_size = document.getElementById("pixel_size");
+get_pixel_size.addEventListener("change", change_pixel_size);
+var pixel_size = parseFloat(get_pixel_size.value);
+
+//Zooming
+var zooming;
+var clicked_released_xpos;
+var clicked_released_ypos;
 
 
 
@@ -138,12 +142,12 @@ function create_squares() {
   tegnBrukBakgrunn("black");
   // tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
 
-  for (let x = size_lower; x < size_upper; x++) {
+  for (let x = (size_lower); x < (size_upper); x++) {
     if (matrix_squares[x] == undefined) {
       matrix_squares[x] = [];
     }
 
-    for (let y = size_lower; y < size_upper; y++) {
+    for (let y = (size_lower); y < (size_upper); y++) {
 
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
@@ -185,11 +189,6 @@ function change_lightness(x, y) {
     return  Math.abs(( (100 + Function("return " + returnme)()) % 200) - 100); //TODO: ! This is not a good soluution, i want a smooth tranistion, this is sudden
 }
 
-const get_pixel_size = document.getElementById("pixel_size");
-get_pixel_size.addEventListener("change", change_pixel_size);
-var pixel_size = parseFloat(get_pixel_size.value);
-
-
 function change_size_upper() {
 
   var new_size = parseInt(get_size_upper.value);
@@ -226,84 +225,83 @@ function change_size_lower() {
     if (new_size < max_size) {
       max_size = new_size;
 
-      // tegnBrukBakgrunn('black')
-
-
       size = (Math.abs(new_size) + size_upper)/pixel_size;
-      // ctx.imageSmoothingQuality = "high"
-      ctx.imageSmoothingEnabled = false
+
       tegnBrukBakgrunn('black')
       
       ctx.drawImage(img, (600/size)*(old_size_lower-new_size), 0, ((600/size)*(size-(old_size_lower-new_size))).toFixed(4), ((600/size)*(size-(old_size_lower-new_size))).toFixed(4));
       new_pixels(new_size, new_size, old_size_lower, size_upper)
-
     }
   }
-
   size_lower = new_size;
-
 }
 
-
 function change_pixel_size() {
-  // old_size_upper = 0;
-  // old_size_lower = 0;
-  matrix_squares = [];
 
+
+  // matrix_squares = [];
 
   if (get_pixel_size.value.includes('\'')){
     pixel_size = get_pixel_size.value.replace( /\'/g , '')
-    size = (Math.abs(size_lower) + size_upper)/pixel_size
   }
   else{
     pixel_size = parseFloat(get_pixel_size.value);
-    size = (Math.abs(size_lower) + size_upper)/pixel_size
-
   }
+
+  size_lower = (get_size_lower.value/pixel_size)
+  size_upper = (get_size_upper.value/pixel_size)
+  size = (Math.abs(size_lower) + size_upper)
   create_squares();
 }
-
-
 
 
 function get_cursor_position(canvas, event) {
   const rect = canvas.getBoundingClientRect();
 
-  if (event.type == "mousedown") {
+  var absolute_width_square = canvas.width / size;
+  var absolute_heigth_square = canvas.height / size;
 
+  if (event.type == "mousedown") {
+    
+    //Absoulut_width/height_square is the size of each pixel on the canvas.
+
+    
+  console.log(absolute_heigth_square)
 
     canvas.addEventListener("mousemove", zoom_guider);
 
-    absolute_width_square = canvas.width / size;
-    absolute_heigth_square = canvas.height / size;
-
     zooming = true;
     //finds the absolute coordinates clicked
-    down_x = (event.clientX - rect.left) / absolute_width_square + size_lower;
-    down_y = -((event.clientY - rect.top) / absolute_width_square + size_lower);
+    var down_x = (event.clientX - rect.left) / absolute_width_square + size_lower;
+    var down_y = -((event.clientY - rect.top) / absolute_width_square + size_lower);
     clicked_released_xpos = [down_x];
     clicked_released_ypos = [down_y];
   }
+  
   else if (event.type == "mouseup") {
     canvas.removeEventListener("mousemove", zoom_guider);
     zooming = false;
-    up_x = (event.clientX - rect.left) / absolute_width_square + size_lower;
-    up_y = -((event.clientY - rect.top) / absolute_heigth_square + size_lower);
+    
+    var up_x = (event.clientX - rect.left) / absolute_width_square + size_lower;
+    var up_y = -((event.clientY - rect.top) / absolute_heigth_square + size_lower);
 
-    clicked_released_xpos = [down_x, up_x];
-    clicked_released_ypos = [down_y, up_y];
+    clicked_released_xpos[1] = up_x;
+    clicked_released_ypos[1] = up_y;
 
+    //sorts from lowest to highest
     clicked_released_xpos.sort(function (a, b) {return a - b;});
     clicked_released_ypos.sort(function (a, b) {return a - b;});
+
+    var difference = Math.abs(size_lower) - Math.abs(size_upper);
+
     if (event.ctrlKey) {
       tegnBrukXY(size_lower, size_upper, size_lower, size_upper)
-      // create_squares();
     }
+
     else{
-      tegnBrukXY(clicked_released_xpos[0], clicked_released_xpos[1], clicked_released_ypos[0], clicked_released_ypos[1]);
+      tegnBrukXY(clicked_released_xpos[0], clicked_released_xpos[1], clicked_released_ypos[0] - difference, clicked_released_ypos[1] - difference);
+      // tegnBrukXY(-30, 30,-30, 30);
     }
-
-
 
     //TODO: No point in drawing everything of only a small part is shown,
     //make it so that you can only draw complete squares with zoom_guider, and only draw and show the pixels "selected"
@@ -315,13 +313,13 @@ function zoom_guider() {
   tegnBrukBakgrunn("black");
   const rect = canvas.getBoundingClientRect();
 
-  absolute_width_square = canvas.width / size;
-  absolute_heigth_square = canvas.height / size;
-
-  current_x =
-    (event.clientX - rect.left) / absolute_width_square + size_lower;
+  var absolute_width_square = canvas.width / size;
+  var absolute_heigth_square = canvas.height / size;
+  
+  current_x = 
+  (event.clientX - rect.left) / absolute_width_square + size_lower;
   current_y =
-    (event.clientY - rect.top) / absolute_heigth_square + size_lower;
+    -((event.clientY - rect.top) / absolute_heigth_square + size_lower);
 
   var difference = Math.abs(size_lower) - Math.abs(size_upper);
   clicked_released_xpos[1] = current_x;
@@ -331,18 +329,11 @@ function zoom_guider() {
     (clicked_released_xpos[0]),
     (clicked_released_ypos[0] - difference),
     current_x,
-    (-current_y - difference),
+    (current_y - difference),
     "blue",
     false
   );
 }
-
-canvas.addEventListener("mousedown", function (e) {get_cursor_position(canvas, e);});
-canvas.addEventListener("mouseup", function (e) {get_cursor_position(canvas, e);});
-
-
-
-
 
 function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimension_length) {
   tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
@@ -387,7 +378,6 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
   img = new Image();
   dataURL = canvas.toDataURL();
   img.src = dataURL;
-
 }
 
 //------------------------------------------------------------------------------\\
