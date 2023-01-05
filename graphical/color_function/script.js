@@ -254,7 +254,7 @@ function change_pixel_size() {
   create_squares();
 }
 
-
+//FIXME: pixel_size creates a bug when changing size 
 function get_cursor_position(canvas, event) {
   const rect = canvas.getBoundingClientRect();
 
@@ -264,9 +264,6 @@ function get_cursor_position(canvas, event) {
   if (event.type == "mousedown") {
     
     //Absoulut_width/height_square is the size of each pixel on the canvas.
-
-    
-  console.log(absolute_heigth_square)
 
     canvas.addEventListener("mousemove", zoom_guider);
 
@@ -310,7 +307,9 @@ function get_cursor_position(canvas, event) {
 }
 
 function zoom_guider() {
-  tegnBrukBakgrunn("black");
+  // tegnBrukBakgrunn("black");
+  ctx.drawImage(img, 0, 0, 600, 600);
+
   const rect = canvas.getBoundingClientRect();
 
   var absolute_width_square = canvas.width / size;
