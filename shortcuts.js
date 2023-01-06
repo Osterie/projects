@@ -22,6 +22,12 @@ TODO ||| LEARN ALSO HOW TO MAKE CUSTOM EMMET SHORTCUTS AND DO IT
 
 Most useful keyboard shortcuts VSCODE
 
+---------------------WRITING---------------------
+!Instead of console.log('name', name) - console.log({name})
+
+!Time a Function: console.time(before code), console.timeEnd(after code)
+
+
 
 ----------------------CURSOR----------------------
 

@@ -27,9 +27,6 @@ ctx.imageSmoothingEnabled = false
 
 var animId;
 
-// var old_size_upper = 0;
-// var old_size_lower = 0;
-// var redraw_background = true;
 var size_lower = -10;
 var size_upper = 10;
 var size = (Math.abs(size_lower) + size_upper)/pixel_size;
@@ -53,8 +50,6 @@ var pixel_size = parseFloat(get_pixel_size.value);
 var zooming;
 var clicked_released_xpos;
 var clicked_released_ypos;
-
-
 
 class Square {
   constructor(xpos, ypos, hue, saturation, lightness, pixel_size) {
@@ -245,25 +240,36 @@ function change_pixel_size() {
 //FIXME: pixel_size creates a bug when changing size 
 function get_cursor_position(canvas, event) {
   const rect = canvas.getBoundingClientRect();
-
+  size = (Math.abs(size_lower) + size_upper);
   var absolute_width_square = canvas.width / size;
   var absolute_heigth_square = canvas.height / size;
 
+  // size_lower = (get_size_lower.value)*pixel_size
+  // size_upper = (get_size_upper.value)*pixel_size
+
   if (event.type == "mousedown") {
     
+    // size_lower = (get_size_lower.value)*pixel_size
+    // size_upper = (get_size_upper.value)*pixel_size
     //Absoulut_width/height_square is the size of each pixel on the canvas.
 
     canvas.addEventListener("mousemove", zoom_guider);
 
     zooming = true;
     //finds the absolute coordinates clicked
-    var down_x = (event.clientX - rect.left) / absolute_width_square + size_lower;
-    var down_y = -((event.clientY - rect.top) / absolute_width_square + size_lower);
+    
+    console.log(((event.clientX - rect.left)), 'pixels ', {absolute_width_square} , {size})
+    console.log({size_lower}, {size_upper})
+    var down_x = ((event.clientX - rect.left) / absolute_width_square) + size_lower;
+    var down_y = -(((event.clientY - rect.top) / absolute_width_square) + size_lower);
+    console.log({down_x}, {down_y})
     clicked_released_xpos = [down_x];
     clicked_released_ypos = [down_y];
   }
   
   else if (event.type == "mouseup") {
+    // size_lower = (get_size_lower.value)*pixel_size
+    // size_upper = (get_size_upper.value)*pixel_size
     canvas.removeEventListener("mousemove", zoom_guider);
     zooming = false;
     
@@ -278,13 +284,13 @@ function get_cursor_position(canvas, event) {
     clicked_released_ypos.sort(function (a, b) {return a - b;});
 
     var difference = Math.abs(size_lower) - Math.abs(size_upper);
-
+    // tegnBrukBakgrunn('black')
     if (event.ctrlKey) {
-      tegnBrukXY(size_lower, size_upper, size_lower, size_upper)
+      tegnBrukXY(size_lower*pixel_size, size_upper*pixel_size, size_lower*pixel_size, size_upper*pixel_size)
     }
 
     else{
-      tegnBrukXY(clicked_released_xpos[0], clicked_released_xpos[1], clicked_released_ypos[0] - difference, clicked_released_ypos[1] - difference);
+      tegnBrukXY(clicked_released_xpos[0]*0.5, clicked_released_xpos[1]*0.5, (clicked_released_ypos[0] - difference)*0.5, (clicked_released_ypos[1] - difference)*0.5);
     }
 
     //TODO: No point in drawing everything of only a small part is shown,
@@ -312,10 +318,10 @@ function zoom_guider() {
   clicked_released_ypos[1] = current_y;
 
   tegnFirkant(
-    (clicked_released_xpos[0]),
-    (clicked_released_ypos[0] - difference),
-    current_x,
-    (current_y - difference),
+    (clicked_released_xpos[0]*pixel_size),
+    ((clicked_released_ypos[0] - difference)*pixel_size),
+    current_x*pixel_size,
+    ((current_y - difference)*pixel_size),
     "blue",
     false
   );
@@ -356,7 +362,6 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
     }
 
     for (let y = dimension_start_x; y < dimension_width; y++) {
-
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
         ((y*pixel_size)),
