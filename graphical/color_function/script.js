@@ -41,8 +41,6 @@ var lightness = get_lightness_expression.value
 var matrix_squares = [];
 
 //GUIDING BOX FOR RESIZE
-
-
 var max_size = 0;
 var img
 var dataURL
@@ -67,21 +65,33 @@ class Square {
     this.lightness = lightness;
     this.pixel_size = pixel_size;
     this.tegn()
+
   }
 
   tegn() {
+    if (!isFinite (this.hue)) {
+      tegnFyltRektangel(
+        this.xpos,
+        this.ypos,
+        this.pixel_size,
+        this.pixel_size,
+        'hsl( 100, 100% , 0%)'
+        );
+        }
     tegnFyltRektangel(
       this.xpos,
       this.ypos,
       this.pixel_size,
       this.pixel_size,
-      `hsl( ${this.hue}, ${this.saturation}%, ${this.lightness}%)`
+      'hsl( ' +  this.hue + ', ' + this.saturation + '% ,' + this.lightness + '%)'
       );
+      // tegnTekst(`(${this.xpos}, ${this.ypos})` ,this.xpos, this.ypos, 'black', 0, 'left', 10, 'Calibri', 'bottom')
+      // tegnTekst('hwi' ,this.xpos, this.ypos, 'black', 0, 'left', 300, 'Calibri', 'bottom')
     }
 
   hue_changed(x, y) {
     var hue_expression = get_hue_expression.value.replace(/X/g, x).replace(/Y/g, y);
-    this.hue =  Function(`return + ${hue_expression}`)()
+    this.hue = Function('return ' + hue_expression)()
     this.tegn()
   }
 
@@ -128,6 +138,7 @@ function hsl_loop(letter) {
   for (let x = size_lower; x < size_upper; x++) {
     for (let y = size_lower; y < size_upper; y++) {
       letter_method.call(matrix_squares[x][y], (x*pixel_size) , (y*pixel_size) );
+      // (matrix_squares[x][y].hue_changed(x, y));
     }
   }
 
@@ -139,7 +150,8 @@ function hsl_loop(letter) {
 
 function create_squares(start, end) {
   size = (Math.abs(size_lower) + size_upper)/pixel_size;
-  new_pixels(start, start, end, end)
+  new_pixels(start, start , end, end)
+
 }
 
 function change_hue(x, y) {
@@ -147,7 +159,8 @@ function change_hue(x, y) {
     let returnme = get_hue_expression.value
     .replace(/X/g, x)
     .replace(/Y/g, y);
-    return Function(`return ${returnme}`)();
+    return Function('return ' + returnme)();
+
 }
 
 function change_saturation(x, y) {
@@ -215,9 +228,6 @@ function change_size_lower() {
 }
 
 function change_pixel_size() {
-
-
-  // matrix_squares = [];
 
   if (get_pixel_size.value.includes("\"")){
     pixel_size = get_pixel_size.value.replace( /\"/g , "")
@@ -310,20 +320,11 @@ function zoom_guider() {
     false
   );
 }
+
 //FIXME: bug when changing size for values not defined, ie. log(x) when x is negative
+
 function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimension_length) {
-  // matrix_squares[0] = []
-  // matrix_squares[0][0] = new Square(
-  //   ((0*pixel_size)),
-  //   ((0*pixel_size)),
-  //   NaN,
-  //   change_saturation(100*pixel_size, 100*pixel_size),
-  //   change_lightness(100*pixel_size, 100*pixel_size),
-  //   20
-  //   );
-  //   console.log(matrix_squares)
-  //   return
-    
+
   //column
   for (let x = dimension_start_x; x < dimension_width; x++) {
     if (matrix_squares[x] == undefined) {
@@ -338,18 +339,17 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
         change_saturation(x*pixel_size, y*pixel_size),
         change_lightness(x*pixel_size, y*pixel_size),
         pixel_size
-      );
+        );
     }
   }
-  if (dimension_start_x == dimension_start_y && dimension_width == dimension_length ) {
-    img = new Image();
-    dataURL = canvas.toDataURL();
-    img.src = dataURL;
-    console.log(matrix_squares)
-    return
-  }
+    if (dimension_start_x == dimension_start_y && dimension_width == dimension_length ) {
+      img = new Image();
+      dataURL = canvas.toDataURL();
+      img.src = dataURL;
+      return
+    }
 
-  //row
+  // row
   for (let x = dimension_start_y; x < dimension_length; x++) {
     if (matrix_squares[x] == undefined) {
       matrix_squares[x] = [];
@@ -367,14 +367,15 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
         );
       }
     }
-  console.log(matrix_squares)
+
   img = new Image();
   dataURL = canvas.toDataURL();
   img.src = dataURL;
 }
 
+
 //------------------------------------------------------------------------------\\
-//! EXPLORE!
+//!                               EXPLORE!
 //------------------------------------------------------------------------------\\
 
 //math.js library is recommended
@@ -501,7 +502,7 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
 //TODO:! Add a button for the option to redraw the black background, creates very interesting patterns when the size of the pixels are < 1
 //TODO: Make an option to turn on the sawtooth pattern for hue too? and create lower and upper limit, this.hue =  Math.abs(( (100 + Function("return " + hue_expression)()) % 200) - 100)
 //!TODO: Create a option to toggle between clicking a button to run script and running script when a variable is changed.
-
+//!TODO: Performance mode and fast mode, ise ctx.drawimage method for fast and redraw every pixel every time for fast mode.
 
 
 //TODO: Create option to make a variable that changes every second f.eks. goes from 1 to 10 then 10 to 1, call it n and then n can be
