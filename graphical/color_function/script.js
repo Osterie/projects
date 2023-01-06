@@ -186,7 +186,7 @@ function change_size_upper() {
       max_size = new_size;
       
       size = (Math.abs(size_lower) + size_upper)/pixel_size;
-      tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
+      tegnBrukXY(get_size_lower.value, get_size_upper.value, get_size_lower.value, get_size_upper.value);
 
       ctx.drawImage(img, 0, (600/size)*(new_size-old_size_upper) , ((600/size)*(size-(new_size-old_size_upper))).toFixed(4), ((600/size)*(size-(new_size-old_size_upper))).toFixed(4));
 
@@ -200,7 +200,7 @@ function change_size_upper() {
 
 function change_size_lower() {
 
-  var new_size = parseInt(get_size_lower.value);
+  var new_size = parseInt(get_size_lower.value)/pixel_size;
 
   if (new_size < size_lower) {
     var old_size_lower = size_lower;
@@ -208,12 +208,9 @@ function change_size_lower() {
 
     if (new_size < max_size) {
       max_size = new_size;
-
-      size = (Math.abs(new_size) + size_upper)/pixel_size;
-
-      // tegnBrukBakgrunn("black")
-      tegnBrukXY(size_lower, size_upper, size_lower, size_upper);
       
+      size = (Math.abs(new_size) + size_upper);
+      tegnBrukXY(get_size_lower.value, get_size_upper.value, get_size_lower.value, get_size_upper.value);
 
       ctx.drawImage(img, (600/size)*(old_size_lower-new_size), 0, ((600/size)*(size-(old_size_lower-new_size))).toFixed(4), ((600/size)*(size-(old_size_lower-new_size))).toFixed(4));
       new_pixels(new_size, new_size, old_size_lower, size_upper)
@@ -258,11 +255,8 @@ function get_cursor_position(canvas, event) {
     zooming = true;
     //finds the absolute coordinates clicked
     
-    console.log(((event.clientX - rect.left)), 'pixels ', {absolute_width_square} , {size})
-    console.log({size_lower}, {size_upper})
     var down_x = ((event.clientX - rect.left) / absolute_width_square) + size_lower;
     var down_y = -(((event.clientY - rect.top) / absolute_width_square) + size_lower);
-    console.log({down_x}, {down_y})
     clicked_released_xpos = [down_x];
     clicked_released_ypos = [down_y];
   }
@@ -286,15 +280,16 @@ function get_cursor_position(canvas, event) {
     var difference = Math.abs(size_lower) - Math.abs(size_upper);
     // tegnBrukBakgrunn('black')
     if (event.ctrlKey) {
-      tegnBrukXY(size_lower*pixel_size, size_upper*pixel_size, size_lower*pixel_size, size_upper*pixel_size)
+      tegnBrukXY(get_size_lower.value, get_size_upper.value, get_size_lower.value, get_size_upper.value);
     }
 
     else{
-      tegnBrukXY(clicked_released_xpos[0]*0.5, clicked_released_xpos[1]*0.5, (clicked_released_ypos[0] - difference)*0.5, (clicked_released_ypos[1] - difference)*0.5);
+      tegnBrukXY(clicked_released_xpos[0]*pixel_size, clicked_released_xpos[1]*pixel_size, (clicked_released_ypos[0] - difference)*pixel_size, (clicked_released_ypos[1] - difference)*pixel_size);
     }
 
     //TODO: No point in drawing everything of only a small part is shown,
     //make it so that you can only draw complete squares with zoom_guider, and only draw and show the pixels "selected"
+    
     create_squares(size_lower, size_upper);
   }
 }
