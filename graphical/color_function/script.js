@@ -3,6 +3,8 @@
 //window.onload = winInit
 //også Funskjoner sikkert
 
+
+
 const get_hue_expression = document.getElementById("hue_expression");
 const get_saturation_expression = document.getElementById("saturation_expression");
 const get_lightness_expression = document.getElementById("lightness_expression");
@@ -345,11 +347,6 @@ function zoom_guider() {
 //FIXME: bug when changing size for values not defined, ie. log(x) when x is negative
 
 function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimension_length) {
-
-  //what
-  //creating new comments to test hwo branches work
-  
-//Testing branch is being tried
 
   //column
   //width is locally declared as dimension_width for improved performance by reducing amount of property lookups 
