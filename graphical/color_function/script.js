@@ -346,6 +346,7 @@ function zoom_guider() {
 
 function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimension_length) {
 
+  //what
 
   //column
   //width is locally declared as dimension_width for improved performance by reducing amount of property lookups 
