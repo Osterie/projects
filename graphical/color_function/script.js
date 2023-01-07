@@ -15,7 +15,8 @@ get_saturation_expression.addEventListener("change",  function(){hsl_loop(2)});
 get_lightness_expression.addEventListener("change",  function(){hsl_loop(3)});
 get_size_lower.addEventListener("change", change_size_lower);
 get_size_upper.addEventListener("change", change_size_upper);
-get_upscale.addEventListener("click", function() {create_squares(size_lower, size_upper)})
+// get_upscale.addEventListener("click", function() {create_squares(size_lower, size_upper)})
+get_upscale.addEventListener("click", function() {draw_squares()})
 
 var canvas = elGetId("canvas");
 canvas.addEventListener("mousedown", function (e) {get_cursor_position(canvas, e);});
@@ -133,7 +134,6 @@ function hsl_loop(letter) {
   for (let x = size_lower; x < size_upper; x++) {
     for (let y = size_lower; y < size_upper; y++) {
       letter_method.call(matrix_squares[x][y], (x*pixel_size) , (y*pixel_size) );
-      // (matrix_squares[x][y].hue_changed(x, y));
     }
   }
 
@@ -147,6 +147,23 @@ function create_squares(start, end) {
   size = (Math.abs(size_lower) + size_upper)/pixel_size;
   new_pixels(start, start , end, end)
 
+}
+
+function draw_squares() {
+
+  tegnBrukBakgrunn('black')
+  for (let x = size_lower; x < size_upper; x++) {
+    if (matrix_squares[x] == undefined) {
+      matrix_squares[x] = new Array(dimension_length);
+    }
+    
+    for (let y = size_lower; y < size_upper; y++) {
+      matrix_squares[x][y].tegn()
+    }
+  }
+  img = new Image();
+  dataURL = canvas.toDataURL();
+  img.src = dataURL;
 }
 
 function change_hue(x, y) {
@@ -221,6 +238,8 @@ function change_size_lower() {
 
 function change_pixel_size() {
 
+  //Checks if get_pixel_size.value has quotations, having quotations creates a cool effect
+  //Because it makes pixel_size a string and not a float
   if (get_pixel_size.value.includes("\"")){
     pixel_size = get_pixel_size.value.replace( /\"/g , "")
   }
@@ -278,9 +297,10 @@ function get_cursor_position(canvas, event) {
     clicked_released_ypos.sort(function (a, b) {return a - b;});
 
     var difference = Math.abs(size_lower) - Math.abs(size_upper);
-    // tegnBrukBakgrunn('black')
     if (event.ctrlKey) {
       tegnBrukXY(get_size_lower.value, get_size_upper.value, get_size_lower.value, get_size_upper.value);
+      ctx.drawImage(img, 0, 0, 600, 600);
+      return
     }
 
     else{
@@ -289,8 +309,8 @@ function get_cursor_position(canvas, event) {
 
     //TODO: No point in drawing everything of only a small part is shown,
     //make it so that you can only draw complete squares with zoom_guider, and only draw and show the pixels "selected"
-    
-    create_squares(size_lower, size_upper);
+    draw_squares()
+    // create_squares(size_lower, size_upper);
   }
 }
 
@@ -326,13 +346,15 @@ function zoom_guider() {
 
 function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimension_length) {
 
-  //column
-  for (let x = dimension_start_x; x < dimension_width; x++) {
-    if (matrix_squares[x] == undefined) {
-      matrix_squares[x] = [];
-    }
 
-    for (let y = dimension_start_y; y < dimension_length; y++) {
+  //column
+  //width is locally declared as dimension_width for improved performance by reducing amount of property lookups 
+  for (let x = dimension_start_x, width = dimension_width; x < width; x++) {
+    if (matrix_squares[x] == undefined) {
+      matrix_squares[x] = new Array(dimension_length);
+    }
+    
+    for (let y = dimension_start_y, length = dimension_length; y < length; y++) {
       matrix_squares[x][y] = new Square(
         ((x*pixel_size)),
         ((y*pixel_size)),
@@ -347,13 +369,15 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
       img = new Image();
       dataURL = canvas.toDataURL();
       img.src = dataURL;
+      // requestAnimationFrame(new_pixels)
       return
     }
 
   // row
   for (let x = dimension_start_y; x < dimension_length; x++) {
     if (matrix_squares[x] == undefined) {
-      matrix_squares[x] = [];
+      matrix_squares[x] = new Array(dimension_width);
+      console.log(matrix_squares[x])
     }
 
     for (let y = dimension_start_x; y < dimension_width; y++) {
@@ -367,6 +391,7 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
         );
       }
     }
+  // requestAnimationFrame(new_pixels)
 
   img = new Image();
   dataURL = canvas.toDataURL();
@@ -493,6 +518,16 @@ function new_pixels(dimension_start_x, dimension_start_y, dimension_width, dimen
 //   }
 // }
 //------------------END--------------------
+
+//TODO: To optimeze creation of matrix_squares do this:
+//Use local variables to store the values of dimension_start_x, dimension_start_y, dimension_width, and dimension_length inside the loop, rather than looking them up on each iteration. This can reduce the amount of property lookups and improve performance.
+
+//Pre-allocate the matrix_squares array with the appropriate size, rather than dynamically adding elements to the array as you go. This can reduce the number of array re-allocations and improve performance.
+
+//Consider using typed arrays, such as Float64Array, to store the data in the matrix_squares array. Typed arrays are faster and more memory-efficient than regular JavaScript arrays.
+
+// Use requestAnimationFrame to schedule the rendering of the matrix_squares array, rather than rendering it all at once. This can help to improve the performance of the rendering and make it more smooth.
+
 
 //TODO: Minor fix in the new_pixels function, it creates the corner piece twice
 
