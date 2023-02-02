@@ -140,6 +140,8 @@ Most useful keyboard shortcuts VSCODE
 
 !Program Search - Alt + Spacebar
 
+!Close App - Alt + F + X
+
 !Go Back/Forward - Alt + Left/Rigtharrow
 
 !Minimize Window - Win + DownArrow
@@ -168,13 +170,56 @@ Most useful keyboard shortcuts VSCODE
 
 ?Close Magnifier - Win + Esc
 
+?Quick Link Meny - Win + X
+
 ?Instantly Switch App - Alt + Esc
 
 *Move App To Other Monitor - Win + Shift + Left/Right
 
 *Wake PC From Blank/Black screen - Win + Ctrl + Shift + B
 
-*Quick Link Meny - Win + X
+
+/! Quick Actions !\
+
+!Power Options - Win + X + O
+
+!Shut Down - Win + X + U + U
+
+----------------FILE EXPLORER-----------------
+
+!Create Folder - Ctrl + Shift + N
+
+!Display Preview Panel - Alt + P
+
+!Delete File - Del
+
+!Open New Tab - Ctrl + T
+
+!Close Active Tab/Window - Ctrl + W
+
+!Move To Next/Previous Tab - Ctrl + Tab(+Shift)
+
+?Open Properties For Selected Item - Alt + Enter
+
+?---Navigation---
+
+?View Next Folder - Alt + Right
+
+?View The Previous Folder - Alt + Left (or backspace)
+
+?View The Folder The Folder Was In - Alt + Up
+
+
+
+?----------------
+
+*Open New Explorer - Ctrl + N
+
+*Select Search Bar - Ctrl + E/F
+
+*Select Adress Bar - Alt + D 
+
+
 
 -----------------SEARCH ENGINE-----------------
 
