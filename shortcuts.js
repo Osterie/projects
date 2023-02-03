@@ -1,3 +1,5 @@
+console.log(process.platform)
+
 /*
 Normal
 !Heavily Used
@@ -140,6 +142,8 @@ Most useful keyboard shortcuts VSCODE
 
 !Program Search - Alt + Spacebar
 
+!Close App - Alt + F + X
+
 !Go Back/Forward - Alt + Left/Rigtharrow
 
 !Minimize Window - Win + DownArrow
@@ -168,13 +172,57 @@ Most useful keyboard shortcuts VSCODE
 
 ?Close Magnifier - Win + Esc
 
+?Quick Link Meny - Win + X
+
 ?Instantly Switch App - Alt + Esc
 
 *Move App To Other Monitor - Win + Shift + Left/Right
 
 *Wake PC From Blank/Black screen - Win + Ctrl + Shift + B
 
-*Quick Link Meny - Win + X
+
+/! Quick Actions !\
+
+!Power Options - Win + X + O
+
+!Shut Down - Win + X + U + U
+
+----------------FILE EXPLORER-----------------
+
+!Create Folder - Ctrl + Shift + N
+
+!Display Preview Panel - Alt + P
+
+!Delete File - Del
+
+!Open New Tab - Ctrl + T
+
+!Close Active Tab/Window - Ctrl + W
+
+!Move To Next/Previous Tab - Ctrl + Tab(+Shift)
+
+!Rename Folder - F2 (Rename Next Folder - Tab)
+
+?Open Properties For Selected Item - Alt + Enter
+
+?---Navigation---
+
+?View Next Folder - Alt + Right
+
+?View The Previous Folder - Alt + Left (or backspace)
+
+?View The Folder The Folder Was In - Alt + Up
+
+?----------------
+
+*Open New Explorer - Ctrl + N
+
+*Select Search Bar - Ctrl + E/F
+
+*Select Adress Bar - Alt + D 
+
+*Change Icon Size - Ctrl + Shift + Number
+
 
 -----------------SEARCH ENGINE-----------------
 
@@ -253,10 +301,24 @@ Most useful keyboard shortcuts VSCODE
 
 ----------------LINUX (BASH COMMANDS)--------------------
 
+!----------General-------
+
+?Display Linux Process - top
+
+?Interactive Process Viewer
+
+
 
 !------List Files----------
 
 ! List All Files And Directories In Current Directory - ls
+!Blue: Directory
+!Green: Executable or recognized data file
+!Cyan (Sky Blue): Symbolic link file
+!Yellow with black background: Device
+!Magenta (Pink): Graphic image file
+!Red: Archive file
+!Red with black background: Broken link
 
 ! List Directory Tree - tree directory
 
@@ -360,6 +422,15 @@ Most useful keyboard shortcuts VSCODE
 
 ------------------------------
 
+!---------Alias----------
+
+To create permanent aliases, open ~/.bashrc (use nano)
+Go to the bottom and add the alias.
+Write $ source ~/.bashrc
+
+!------------------------
+
+
 * Math- expr
 
 mnt/c
@@ -389,7 +460,7 @@ python3 twitter.py >vg.html (DET SOM HADDE KOMMET I TERMINAL)
 
 python3 twitter.py >vg.html >> appender
 
--s symbolsk link
+ln -s symbolsk link
 
 ls -la
 
