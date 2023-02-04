@@ -1,3 +1,5 @@
+console.log(process.platform)
+
 /*
 Normal
 !Heavily Used
@@ -199,6 +201,8 @@ Most useful keyboard shortcuts VSCODE
 
 !Move To Next/Previous Tab - Ctrl + Tab(+Shift)
 
+!Rename Folder - F2 (Rename Next Folder - Tab)
+
 ?Open Properties For Selected Item - Alt + Enter
 
 ?---Navigation---
@@ -209,8 +213,6 @@ Most useful keyboard shortcuts VSCODE
 
 ?View The Folder The Folder Was In - Alt + Up
 
-
-
 ?----------------
 
 *Open New Explorer - Ctrl + N
@@ -219,6 +221,7 @@ Most useful keyboard shortcuts VSCODE
 
 *Select Adress Bar - Alt + D 
 
+*Change Icon Size - Ctrl + Shift + Number
 
 
 -----------------SEARCH ENGINE-----------------
@@ -298,10 +301,24 @@ Most useful keyboard shortcuts VSCODE
 
 ----------------LINUX (BASH COMMANDS)--------------------
 
+!----------General-------
+
+?Display Linux Process - top
+
+?Interactive Process Viewer
+
+
 
 !------List Files----------
 
 ! List All Files And Directories In Current Directory - ls
+!Blue: Directory
+!Green: Executable or recognized data file
+!Cyan (Sky Blue): Symbolic link file
+!Yellow with black background: Device
+!Magenta (Pink): Graphic image file
+!Red: Archive file
+!Red with black background: Broken link
 
 ! List Directory Tree - tree directory
 
@@ -405,6 +422,15 @@ Most useful keyboard shortcuts VSCODE
 
 ------------------------------
 
+!---------Alias----------
+
+To create permanent aliases, open ~/.bashrc (use nano)
+Go to the bottom and add the alias.
+Write $ source ~/.bashrc
+
+!------------------------
+
+
 * Math- expr
 
 mnt/c
@@ -434,7 +460,7 @@ python3 twitter.py >vg.html (DET SOM HADDE KOMMET I TERMINAL)
 
 python3 twitter.py >vg.html >> appender
 
--s symbolsk link
+ln -s symbolsk link
 
 ls -la
 

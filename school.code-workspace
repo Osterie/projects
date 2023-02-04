@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "../school"
+		},
+		{
+			"path": "../graphical"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../soundify"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "soundify"
+	}
+}
