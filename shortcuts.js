@@ -1,5 +1,3 @@
-console.log(process.platform)
-
 /*
 Normal
 !Heavily Used
@@ -62,6 +60,8 @@ Most useful keyboard shortcuts VSCODE
     ?Scroll Page Up / Down - Alt + PgUp / PgDn
 
 	?Change Tab Mode - Ctrl + M
+
+	?Change Color Theme - Ctrl + K + Ctrl + T 
 
 	*Move to previous/next mouse area - ALT + Left/RightArrow
 
@@ -127,6 +127,8 @@ Most useful keyboard shortcuts VSCODE
 
 ?Go to File - Ctrl + P
 
+?New File - Ctrl + Alt + Win + N
+
 ?Save All - Ctrl + K + S
 
 *Toggle Word Wrap - Alt + Z
@@ -185,7 +187,7 @@ Most useful keyboard shortcuts VSCODE
 
 !Power Options - Win + X + O
 
-!Shut Down - Win + X + U + U
+!Shutdown - Win + X + U + U
 
 ----------------FILE EXPLORER-----------------
 
@@ -306,7 +308,6 @@ Most useful keyboard shortcuts VSCODE
 ?Display Linux Process - top
 
 ?Interactive Process Viewer
-
 
 
 !------List Files----------
@@ -430,7 +431,7 @@ Write $ source ~/.bashrc
 
 !------------------------
 
-
+!Shutdown - shutdown.exe /s (after 1 mins gracefull, /t for instant)
 * Math- expr
 
 mnt/c
