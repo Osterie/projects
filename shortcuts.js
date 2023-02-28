@@ -51,6 +51,8 @@ Most useful keyboard shortcuts VSCODE
 
     !Move To Start / End Of Line - Home / End
 
+	?Focus And Select Breadcrumbs - Ctrl + Shift + .
+
 	?Open settings - Ctrl + ,
 
 	?Split View Change View - Ctrl + 1, Ctrl + 2...
@@ -62,6 +64,12 @@ Most useful keyboard shortcuts VSCODE
 	?Change Tab Mode - Ctrl + M
 
 	?Change Color Theme - Ctrl + K + Ctrl + T 
+
+	?Open Settings - Ctrl + ;
+
+	?Open Shortcuts - Ctrl + K + Ctrl + S
+
+	?Focus On Open Editors - Ctrl + K + E
 
 	*Move to previous/next mouse area - ALT + Left/RightArrow
 
@@ -99,6 +107,8 @@ Most useful keyboard shortcuts VSCODE
 
 !Go To Specific Line - Ctrl + G
 
+!Auto Fix - Shift + Alt + .
+
 *Join Lines - Ctrl + Shift + J
 
 *Trim Trailing Whitespace - Ctrl + K + Ctrl + X
@@ -133,6 +143,8 @@ Most useful keyboard shortcuts VSCODE
 
 *Toggle Word Wrap - Alt + Z
 
+*Detect Language From Content - Shift + Alt + D
+
 -----------------EXTENSIONS-----------------
 
 !Insert numbers - Ctrl + Alt + N
@@ -145,6 +157,8 @@ Most useful keyboard shortcuts VSCODE
 !Program Search - Alt + Spacebar
 
 !Close App - Alt + F + X
+
+!Close App/Window - Ctrl + Shift + W
 
 !Go Back/Forward - Alt + Left/Rigtharrow
 
@@ -163,6 +177,7 @@ Most useful keyboard shortcuts VSCODE
 !Cycle Apps On Taskbar - Win + T
 
 !Peek Desktop - Win + ,
+
 
 ?Open Emoji Keyboard - Win + .
 
