@@ -149,6 +149,8 @@ Most useful keyboard shortcuts VSCODE
 
 !Insert numbers - Ctrl + Alt + N
 
+!Relative Path - Ctrl + Shift + H 
+
 
 \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 -----------------WINDOWS-----------------
